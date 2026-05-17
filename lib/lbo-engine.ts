@@ -88,9 +88,9 @@ export function computeDeal(
   const newEqShareOfDiv =
     undilutedTotal > 0 ? inputs.equity.newEquity / undilutedTotal : 0;
 
-  const sponsorCFs = new Array(exitYear + 1).fill(0);
-  const mgmtCFs = new Array(exitYear + 1).fill(0);
-  const newEqCFs = new Array(exitYear + 1).fill(0);
+  const sponsorCFs: number[] = new Array(exitYear + 1).fill(0);
+  const mgmtCFs: number[] = new Array(exitYear + 1).fill(0);
+  const newEqCFs: number[] = new Array(exitYear + 1).fill(0);
   sponsorCFs[0] = -inputs.equity.sponsor;
   mgmtCFs[0] = -inputs.equity.mgmt;
   newEqCFs[0] = -inputs.equity.newEquity;

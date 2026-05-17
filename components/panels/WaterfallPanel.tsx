@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { useDealStore } from "@/lib/store";
 import { fmtMoney, fmtPct, fmtMult } from "@/lib/format";
-import type { TrancheId, YearRow, Tranche } from "@/lib/types";
+import type { TrancheId, YearRow } from "@/lib/types";
 
 const NICE_LABELS: Record<TrancheId, string> = {
   existing: "Existing",
