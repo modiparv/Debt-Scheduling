@@ -109,7 +109,7 @@ export function ReturnsPanel() {
                     borderRadius: 6,
                     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
                   }}
-                  formatter={(v: any, _n, p) => [
+                  formatter={(v: any, _n: any, p: any) => [
                     `${fmtMoney(Number(v))} · ${fmtPct((p.payload as any).pct)}`,
                     (p.payload as any).name,
                   ]}
