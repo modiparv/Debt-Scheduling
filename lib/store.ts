@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { computeDeal } from "./lbo-engine";
 import { baseCase, SCENARIO_PRESETS } from "./scenarios";
-import type { DealInputs, DealOutputs, Tranche, TrancheId } from "./types";
+import type { DealInputs, DealOutputs, DividendInputs, Tranche, TrancheId } from "./types";
 
 interface DealStore {
   inputs: DealInputs;
@@ -19,7 +19,7 @@ interface DealStore {
   patchExit: (patch: Partial<DealInputs["exit"]>) => void;
   patchEquity: (patch: Partial<DealInputs["equity"]>) => void;
   patchPurchase: (patch: { purchasePrice?: number; fees?: number; startingCash?: number; revolverLimit?: number; nolBalance?: number }) => void;
-  patchDividends: (patch: Partial<DealInputs["dividends"]>) => void;
+  patchDividends: (patch: Partial<DividendInputs>) => void;
   toggleTranche: (id: TrancheId, enabled: boolean) => void;
   patchTranche: (id: TrancheId, patch: Partial<Tranche>) => void;
 
@@ -143,8 +143,16 @@ export const useDealStore = create<DealStore>((set, get) => {
 
     patchDividends: (patch) => {
       const prev = get().inputs;
-      const next = { ...prev, dividends: { ...prev.dividends, ...patch } };
-      const field = Object.keys(patch)[0];
+      const base: DividendInputs = prev.dividends ?? {
+        commonDivY1: 0,
+        commonDivGrowth: 0,
+        otherDivPerYear: 0,
+      };
+      const next: DealInputs = {
+        ...prev,
+        dividends: { ...base, ...patch },
+      };
+      const field = Object.keys(patch)[0] ?? "dividends";
       set({
         inputs: next,
         outputs: recompute(next),

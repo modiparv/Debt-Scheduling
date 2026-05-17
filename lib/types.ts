@@ -65,13 +65,13 @@ export interface DealInputs {
   purchasePrice: number;
   fees: number;
   startingCash: number;
-  revolverLimit: number;       // commitment cap on the revolver
-  nolBalance: number;          // beginning Net Operating Loss carry-forward
+  revolverLimit?: number;       // commitment cap on the revolver
+  nolBalance?: number;          // beginning Net Operating Loss carry-forward
   operating: OperatingInputs;
   stack: Tranche[];
   equity: EquityInputs;
   exit: ExitInputs;
-  dividends: DividendInputs;
+  dividends?: DividendInputs;
 }
 
 export interface YearRow {
