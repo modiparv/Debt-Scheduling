@@ -1,6 +1,6 @@
 import type { DealInputs, Tranche } from "./types";
 
-// Default tranche template — disabled. The presets override `enabled` and amounts.
+// Empty template — disabled tranches that presets switch on.
 export function emptyStack(): Tranche[] {
   return [
     {
@@ -8,9 +8,9 @@ export function emptyStack(): Tranche[] {
       label: "Existing Debt (Assumed)",
       enabled: false,
       amount: 0,
-      coupon: 0.06,
-      maturity: 5,
-      amortPct: 0.10,
+      coupon: 0.0425,
+      maturity: 3,
+      amortPct: 0.1111,
       pikYears: 0,
       prepayable: true,
       kicker: 0,
@@ -22,8 +22,8 @@ export function emptyStack(): Tranche[] {
       label: "Bank Revolver",
       enabled: false,
       amount: 0,
-      coupon: 0.055,
-      maturity: 6,
+      coupon: 0.0475,
+      maturity: 8,
       amortPct: 0,
       pikYears: 0,
       prepayable: true,
@@ -36,9 +36,9 @@ export function emptyStack(): Tranche[] {
       label: "Term Loan A",
       enabled: false,
       amount: 0,
-      coupon: 0.06,
-      maturity: 6,
-      amortPct: 0.10,
+      coupon: 0.055,
+      maturity: 8,
+      amortPct: 0.125,
       pikYears: 0,
       prepayable: true,
       kicker: 0,
@@ -50,9 +50,9 @@ export function emptyStack(): Tranche[] {
       label: "Term Loan B",
       enabled: false,
       amount: 0,
-      coupon: 0.07,
-      maturity: 7,
-      amortPct: 0.01,
+      coupon: 0.0525,
+      maturity: 11,
+      amortPct: 0.04,
       pikYears: 0,
       prepayable: true,
       kicker: 0,
@@ -64,8 +64,8 @@ export function emptyStack(): Tranche[] {
       label: "Senior Notes",
       enabled: false,
       amount: 0,
-      coupon: 0.08,
-      maturity: 8,
+      coupon: 0.0425,
+      maturity: 9,
       amortPct: 0,
       pikYears: 0,
       prepayable: true,
@@ -78,12 +78,12 @@ export function emptyStack(): Tranche[] {
       label: "Subordinated Notes",
       enabled: false,
       amount: 0,
-      coupon: 0.10,
-      maturity: 9,
+      coupon: 0.045,
+      maturity: 12,
       amortPct: 0,
-      pikYears: 0,
+      pikYears: 5,
       prepayable: true,
-      kicker: 0.01,
+      kicker: 0.03,
       seniority: "junior",
       color: "#B89A3C",
     },
@@ -92,12 +92,12 @@ export function emptyStack(): Tranche[] {
       label: "Mezzanine",
       enabled: false,
       amount: 0,
-      coupon: 0.12,
-      maturity: 10,
+      coupon: 0.045,
+      maturity: 14,
       amortPct: 0,
-      pikYears: 3,
+      pikYears: 5,
       prepayable: true,
-      kicker: 0.03,
+      kicker: 0.05,
       seniority: "junior",
       color: "#D4AF37",
     },
@@ -106,10 +106,10 @@ export function emptyStack(): Tranche[] {
       label: "Seller Notes",
       enabled: false,
       amount: 0,
-      coupon: 0.05,
-      maturity: 5,
-      amortPct: 0.20,
-      pikYears: 0,
+      coupon: 0.0525,
+      maturity: 7,
+      amortPct: 0.1429,
+      pikYears: 5,
       prepayable: true,
       kicker: 0,
       seniority: "junior",
@@ -120,12 +120,12 @@ export function emptyStack(): Tranche[] {
       label: "Preferred Stock",
       enabled: false,
       amount: 0,
-      coupon: 0.10,
+      coupon: 0.07,
       maturity: 9,
       amortPct: 0,
-      pikYears: 0,
+      pikYears: 5,
       prepayable: false,
-      kicker: 0.02,
+      kicker: 0.04,
       seniority: "preferred",
       color: "#5E3A6B",
     },
@@ -141,50 +141,60 @@ function setTranche(
 }
 
 // ---------- Reference / Base Case ----------
-// Reproduces the user's existing Excel model:
-//   PP $950k, EBITDA $319k, exit Y9 @ 6.0x, sweep 100%
-//   Cap stack: Revolver $200.9k, TLA $80k, TLB $55k, Sr Notes $65k,
-//     Sub Notes $40k, Mezz $70k, Seller $25k, Existing $65k assumed,
-//     Preferred $60k. Equity: Sponsor $220k, Mgmt $40k, New $25k.
+// Reproduces the user's Excel model (LBO_Model_v2.xlsx).
+//   Equity PP $660k, Existing debt assumed $65k, transaction costs ~$13k,
+//   Total funds $950.9k. Sales Y1 $1.1M, 10% growth, ~30% EBITDA margin.
+//   Tax 35%, capex 10%, cash min $50k, sweep 100%.
+//   Exit Y9 @ 6.0x. Target: Sponsor IRR 27.37%, equity value $2.965M.
 
 export function baseCase(): DealInputs {
   let stack = emptyStack();
-  stack = setTranche(stack, "existing", { amount: 65 });
-  stack = setTranche(stack, "revolver", { amount: 200.9 });
-  stack = setTranche(stack, "tla", { amount: 80 });
-  stack = setTranche(stack, "tlb", { amount: 55 });
-  stack = setTranche(stack, "sr_notes", { amount: 65 });
-  stack = setTranche(stack, "sub_notes", { amount: 40, kicker: 0.01 });
-  stack = setTranche(stack, "mezz", { amount: 70, kicker: 0.03 });
-  stack = setTranche(stack, "seller", { amount: 25 });
-  stack = setTranche(stack, "preferred", { amount: 60, kicker: 0.02 });
+  stack = setTranche(stack, "existing", { amount: 65, coupon: 0.0425, maturity: 3, amortPct: 0.1111 });
+  stack = setTranche(stack, "revolver", { amount: 200.9, coupon: 0.0475 });
+  stack = setTranche(stack, "tla", { amount: 80, coupon: 0.055, amortPct: 0.125, maturity: 8 });
+  stack = setTranche(stack, "tlb", { amount: 55, coupon: 0.0525, amortPct: 0.04, maturity: 11 });
+  stack = setTranche(stack, "sr_notes", { amount: 65, coupon: 0.0425, maturity: 9 });
+  stack = setTranche(stack, "sub_notes", { amount: 40, coupon: 0.045, pikYears: 5, kicker: 0.03, maturity: 12 });
+  stack = setTranche(stack, "mezz", { amount: 70, coupon: 0.045, pikYears: 5, kicker: 0.05, maturity: 14 });
+  stack = setTranche(stack, "seller", { amount: 25, coupon: 0.0525, pikYears: 5, amortPct: 0.1429, maturity: 7 });
+  stack = setTranche(stack, "preferred", { amount: 60, coupon: 0.07, pikYears: 5, kicker: 0.04, maturity: 9 });
 
   return {
     purchasePrice: 950,
     fees: 0,
-    startingCash: 25,
+    startingCash: 55,            // existing BS cash from Excel
+    revolverLimit: 600,
+    nolBalance: 15.5,
     operating: {
-      revenueY1: 1000,
-      revenueGrowth: 0.05,
-      ebitdaMargin: 0.319,
-      marginTrajectory: 0.003,
-      capexPct: 0.04,
-      nwcPct: 0.10,
-      taxRate: 0.25,
-      daPct: 0.04,
+      revenueY1: 1100,
+      revenueGrowth: 0.10,
+      // Excel: COGS 45% (+0.25%/yr), SGA 14% (+0.5%/yr), Other 12% (+0.15%/yr)
+      // → Y1 margin 29%, dropping ~0.9pp/yr to ~21.8% by Y9
+      ebitdaMargin: 0.29,
+      marginTrajectory: -0.009,
+      capexPct: 0.10,
+      nwcPct: 0.05,
+      taxRate: 0.35,
+      daPct: 0.05,
     },
     stack,
     equity: {
       sponsor: 220,
       mgmt: 40,
       newEquity: 25,
-      mgmtPool: 0.02,
+      mgmtPool: 0.04,
+      newEquityKicker: 0.02,
     },
     exit: {
       exitYear: 9,
       exitMultiple: 6.0,
       sweepPct: 1.0,
-      minCash: 10,
+      minCash: 50,
+    },
+    dividends: {
+      commonDivY1: 2.5,
+      commonDivGrowth: 0.05,
+      otherDivPerYear: 0,
     },
   };
 }
@@ -192,34 +202,35 @@ export function baseCase(): DealInputs {
 // ---------- Preset scenarios ----------
 
 export function conservativeLBO(): DealInputs {
-  // Low leverage, all senior, modest growth.
   let stack = emptyStack();
-  stack = setTranche(stack, "tla", { amount: 200, amortPct: 0.15 });
-  stack = setTranche(stack, "tlb", { amount: 100 });
+  stack = setTranche(stack, "tla", { amount: 200, amortPct: 0.15, coupon: 0.055 });
+  stack = setTranche(stack, "tlb", { amount: 100, coupon: 0.0525 });
   stack = setTranche(stack, "revolver", { amount: 25 });
 
   return {
     purchasePrice: 950,
     fees: 0,
     startingCash: 25,
+    revolverLimit: 200,
+    nolBalance: 0,
     operating: {
-      revenueY1: 1000,
+      revenueY1: 1100,
       revenueGrowth: 0.03,
       ebitdaMargin: 0.30,
       marginTrajectory: 0.002,
-      capexPct: 0.04,
-      nwcPct: 0.10,
-      taxRate: 0.25,
-      daPct: 0.04,
+      capexPct: 0.10,
+      nwcPct: 0.05,
+      taxRate: 0.35,
+      daPct: 0.05,
     },
     stack,
     equity: { sponsor: 500, mgmt: 80, newEquity: 45, mgmtPool: 0.02 },
-    exit: { exitYear: 5, exitMultiple: 7.5, sweepPct: 1.0, minCash: 10 },
+    exit: { exitYear: 5, exitMultiple: 7.5, sweepPct: 1.0, minCash: 50 },
+    dividends: { commonDivY1: 2.5, commonDivGrowth: 0.05, otherDivPerYear: 0 },
   };
 }
 
 export function aggressive2007(): DealInputs {
-  // 7x leverage, heavy mezz, aggressive PIK.
   let stack = emptyStack();
   stack = setTranche(stack, "revolver", { amount: 50 });
   stack = setTranche(stack, "tla", { amount: 250 });
@@ -232,24 +243,26 @@ export function aggressive2007(): DealInputs {
     purchasePrice: 1500,
     fees: 30,
     startingCash: 30,
+    revolverLimit: 200,
+    nolBalance: 0,
     operating: {
       revenueY1: 1200,
       revenueGrowth: 0.07,
       ebitdaMargin: 0.27,
       marginTrajectory: 0.002,
-      capexPct: 0.05,
-      nwcPct: 0.12,
-      taxRate: 0.25,
-      daPct: 0.04,
+      capexPct: 0.08,
+      nwcPct: 0.07,
+      taxRate: 0.35,
+      daPct: 0.05,
     },
     stack,
     equity: { sponsor: 320, mgmt: 50, newEquity: 10, mgmtPool: 0.03 },
-    exit: { exitYear: 7, exitMultiple: 8.0, sweepPct: 1.0, minCash: 20 },
+    exit: { exitYear: 7, exitMultiple: 8.0, sweepPct: 1.0, minCash: 50 },
+    dividends: { commonDivY1: 0, commonDivGrowth: 0, otherDivPerYear: 0 },
   };
 }
 
 export function covidStress(): DealInputs {
-  // Base deal but Y1-Y2 revenue declines.
   const base = baseCase();
   return {
     ...base,
@@ -268,7 +281,6 @@ export function sweepOff(): DealInputs {
 }
 
 export function noJuniorDebt(): DealInputs {
-  // Replace mezz + sub + preferred dollars with sponsor equity.
   const base = baseCase();
   const mezz = base.stack.find((t) => t.id === "mezz")?.amount ?? 0;
   const sub = base.stack.find((t) => t.id === "sub_notes")?.amount ?? 0;

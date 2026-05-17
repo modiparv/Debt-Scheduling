@@ -44,6 +44,7 @@ export interface EquityInputs {
   mgmt: number;
   newEquity: number;
   mgmtPool: number;          // performance pool kicker % (of fully-diluted equity)
+  newEquityKicker?: number;  // optional extra kicker for new-equity investors
 }
 
 export interface ExitInputs {
@@ -53,14 +54,24 @@ export interface ExitInputs {
   minCash: number;
 }
 
+export interface DividendInputs {
+  // Common cash dividends paid pro-rata to undiluted equity holders
+  commonDivY1: number;     // Y1 amount
+  commonDivGrowth: number; // annual %
+  otherDivPerYear: number; // additional flat dividend (e.g. preferred-like)
+}
+
 export interface DealInputs {
   purchasePrice: number;
   fees: number;
   startingCash: number;
+  revolverLimit: number;       // commitment cap on the revolver
+  nolBalance: number;          // beginning Net Operating Loss carry-forward
   operating: OperatingInputs;
   stack: Tranche[];
   equity: EquityInputs;
   exit: ExitInputs;
+  dividends: DividendInputs;
 }
 
 export interface YearRow {
@@ -77,6 +88,7 @@ export interface YearRow {
   cfo: number;
   cfi: number;
   preFinancing: number;
+  dividendsPaid: number;       // cash dividends to equity holders this year
   mandatoryAmort: number;
   revolverDraw: number;
   sweepPool: number;
@@ -86,9 +98,9 @@ export interface YearRow {
   leverageRatio: number;
   trancheBalances: Record<TrancheId, number>;
   trancheInterest: Record<TrancheId, number>;
-  tranchePrincipal: Record<TrancheId, number>;   // total $ paid to that tranche this year
-  trancheMandatory: Record<TrancheId, number>;   // mandatory portion
-  trancheOptional: Record<TrancheId, number>;    // optional / sweep portion
+  tranchePrincipal: Record<TrancheId, number>;
+  trancheMandatory: Record<TrancheId, number>;
+  trancheOptional: Record<TrancheId, number>;
 }
 
 export interface EquityHolder {

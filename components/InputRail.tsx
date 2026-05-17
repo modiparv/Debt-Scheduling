@@ -160,6 +160,7 @@ export function InputRail() {
   const patchExit = useDealStore((s) => s.patchExit);
   const patchEquity = useDealStore((s) => s.patchEquity);
   const patchPurchase = useDealStore((s) => s.patchPurchase);
+  const patchDividends = useDealStore((s) => s.patchDividends);
 
   const gap = outputs.gap;
   const balanced = Math.abs(gap) < 1;
@@ -184,30 +185,71 @@ export function InputRail() {
       </div>
 
       <Accordion title="Deal Setup">
-        <Field label="Purchase price">
-          <NumberInput
-            value={inputs.purchasePrice}
-            onChange={(n) => patchPurchase({ purchasePrice: n })}
-            step={25}
-            min={0}
-          />
-        </Field>
-        <Field label="Fees">
-          <NumberInput
-            value={inputs.fees}
-            onChange={(n) => patchPurchase({ fees: n })}
-            step={5}
-            min={0}
-          />
-        </Field>
-        <Field label="Opening cash">
-          <NumberInput
-            value={inputs.startingCash}
-            onChange={(n) => patchPurchase({ startingCash: n })}
-            step={5}
-            min={0}
-          />
-        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Purchase price ($k)">
+            <NumberInput
+              value={inputs.purchasePrice}
+              onChange={(n) => patchPurchase({ purchasePrice: n })}
+              step={25}
+              min={0}
+            />
+          </Field>
+          <Field label="Fees ($k)">
+            <NumberInput
+              value={inputs.fees}
+              onChange={(n) => patchPurchase({ fees: n })}
+              step={5}
+              min={0}
+            />
+          </Field>
+          <Field label="Opening cash ($k)">
+            <NumberInput
+              value={inputs.startingCash}
+              onChange={(n) => patchPurchase({ startingCash: n })}
+              step={5}
+              min={0}
+            />
+          </Field>
+          <Field label="Revolver limit ($k)">
+            <NumberInput
+              value={inputs.revolverLimit ?? 0}
+              onChange={(n) => patchPurchase({ revolverLimit: n })}
+              step={50}
+              min={0}
+            />
+          </Field>
+          <Field label="NOL balance ($k)">
+            <NumberInput
+              value={inputs.nolBalance ?? 0}
+              onChange={(n) => patchPurchase({ nolBalance: n })}
+              step={5}
+              min={0}
+            />
+          </Field>
+        </div>
+        <div className="pt-3 mt-3 border-t border-silver/70">
+          <div className="fin-eyebrow mb-3">Dividend recap (paid to common equity)</div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Common div Y1 ($k)">
+              <NumberInput
+                value={inputs.dividends?.commonDivY1 ?? 0}
+                onChange={(n) => patchDividends({ commonDivY1: n })}
+                step={0.5}
+                min={0}
+              />
+            </Field>
+            <Field label="Annual growth (%)">
+              <NumberInput
+                value={(inputs.dividends?.commonDivGrowth ?? 0) * 100}
+                onChange={(n) => patchDividends({ commonDivGrowth: n / 100 })}
+                step={0.5}
+                min={-20}
+                max={50}
+                suffix="%"
+              />
+            </Field>
+          </div>
+        </div>
       </Accordion>
 
       <Accordion title="Operating Drivers">

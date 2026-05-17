@@ -18,7 +18,8 @@ interface DealStore {
   patchOperating: (patch: Partial<DealInputs["operating"]>) => void;
   patchExit: (patch: Partial<DealInputs["exit"]>) => void;
   patchEquity: (patch: Partial<DealInputs["equity"]>) => void;
-  patchPurchase: (patch: { purchasePrice?: number; fees?: number; startingCash?: number }) => void;
+  patchPurchase: (patch: { purchasePrice?: number; fees?: number; startingCash?: number; revolverLimit?: number; nolBalance?: number }) => void;
+  patchDividends: (patch: Partial<DealInputs["dividends"]>) => void;
   toggleTranche: (id: TrancheId, enabled: boolean) => void;
   patchTranche: (id: TrancheId, patch: Partial<Tranche>) => void;
 
@@ -137,6 +138,17 @@ export const useDealStore = create<DealStore>((set, get) => {
           from: (before as any)?.[field],
           to: (after as any)?.[field],
         },
+      });
+    },
+
+    patchDividends: (patch) => {
+      const prev = get().inputs;
+      const next = { ...prev, dividends: { ...prev.dividends, ...patch } };
+      const field = Object.keys(patch)[0];
+      set({
+        inputs: next,
+        outputs: recompute(next),
+        lastChange: { kind: "purchase", field, from: 0, to: 0 },
       });
     },
 
