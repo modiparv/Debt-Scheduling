@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 export default function HomePage() {
   return (
@@ -83,7 +84,7 @@ export default function HomePage() {
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="fin-card">
       <div className="fin-header text-lg mb-2">{title}</div>

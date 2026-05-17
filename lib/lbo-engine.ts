@@ -1,4 +1,4 @@
-import { irr as solveIrr } from "./irr.ts";
+import { irr as solveIrr } from "./irr";
 import type {
   DealInputs,
   DealOutputs,
@@ -6,7 +6,7 @@ import type {
   Tranche,
   TrancheId,
   YearRow,
-} from "./types.ts";
+} from "./types";
 
 // Order of tranches in the optional cash-sweep cascade (most senior first).
 // Revolver is repaid first when sweeping.

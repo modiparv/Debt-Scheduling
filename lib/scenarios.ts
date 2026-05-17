@@ -1,4 +1,4 @@
-import type { DealInputs, Tranche } from "./types.ts";
+import type { DealInputs, Tranche } from "./types";
 
 // Default tranche template — disabled. The presets override `enabled` and amounts.
 export function emptyStack(): Tranche[] {

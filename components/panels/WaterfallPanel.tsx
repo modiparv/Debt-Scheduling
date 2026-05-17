@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useDealStore } from "@/lib/store.ts";
-import { fmtMoney, classNames } from "@/lib/format.ts";
-import type { TrancheId, YearRow } from "@/lib/types.ts";
+import type { ReactNode } from "react";
+import { useDealStore } from "@/lib/store";
+import { fmtMoney, classNames } from "@/lib/format";
+import type { TrancheId, YearRow } from "@/lib/types";
 
 const NICE_LABELS: Record<TrancheId, string> = {
   existing: "Existing Debt",
@@ -52,7 +53,7 @@ function Row({
   );
 }
 
-function Bracket({ children, color }: { children: React.ReactNode; color: string }) {
+function Bracket({ children, color }: { children: ReactNode; color: string }) {
   return (
     <div
       className="border-l-4 rounded pl-1 my-1"

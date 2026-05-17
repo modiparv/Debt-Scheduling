@@ -1,9 +1,9 @@
 "use client";
 
 import { create } from "zustand";
-import { computeDeal } from "./lbo-engine.ts";
-import { baseCase, SCENARIO_PRESETS } from "./scenarios.ts";
-import type { DealInputs, DealOutputs, Tranche, TrancheId } from "./types.ts";
+import { computeDeal } from "./lbo-engine";
+import { baseCase, SCENARIO_PRESETS } from "./scenarios";
+import type { DealInputs, DealOutputs, Tranche, TrancheId } from "./types";
 
 interface DealStore {
   inputs: DealInputs;

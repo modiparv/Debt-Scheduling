@@ -1,8 +1,8 @@
 "use client";
 
-import { useDealStore } from "@/lib/store.ts";
-import { fmtMoney, fmtPct } from "@/lib/format.ts";
-import type { Tranche, TrancheId } from "@/lib/types.ts";
+import { useDealStore } from "@/lib/store";
+import { fmtMoney, fmtPct } from "@/lib/format";
+import type { Tranche, TrancheId } from "@/lib/types";
 
 // Vertical stacked bar: senior at the bottom, junior in the middle,
 // equity at the top. Each layer shows label, dollars, and % of total.

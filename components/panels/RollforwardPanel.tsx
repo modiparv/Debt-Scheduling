@@ -10,9 +10,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useDealStore } from "@/lib/store.ts";
-import { fmtMoney, fmtMult } from "@/lib/format.ts";
-import type { TrancheId } from "@/lib/types.ts";
+import { useDealStore } from "@/lib/store";
+import { fmtMoney, fmtMult } from "@/lib/format";
+import type { TrancheId } from "@/lib/types";
 
 export function RollforwardPanel() {
   const inputs = useDealStore((s) => s.inputs);

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useDealStore } from "@/lib/store.ts";
-import { encodeDeal } from "@/lib/url-encode.ts";
+import type { ChangeEvent } from "react";
+import { useDealStore } from "@/lib/store";
+import { encodeDeal } from "@/lib/url-encode";
 
 export function ShareExportBar() {
   const inputs = useDealStore((s) => s.inputs);
@@ -27,7 +28,7 @@ export function ShareExportBar() {
     URL.revokeObjectURL(url);
   }
 
-  function importJson(e: React.ChangeEvent<HTMLInputElement>) {
+  function importJson(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     file.text().then((txt) => {

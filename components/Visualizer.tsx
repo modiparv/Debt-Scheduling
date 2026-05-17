@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { InputRail } from "./InputRail.tsx";
-import { ScenarioPresets } from "./ScenarioPresets.tsx";
-import { Explainer } from "./Explainer.tsx";
-import { CompareToggle, CompareDelta } from "./CompareToggle.tsx";
-import { CapitalStackPanel } from "./panels/CapitalStackPanel.tsx";
-import { WaterfallPanel } from "./panels/WaterfallPanel.tsx";
-import { RollforwardPanel } from "./panels/RollforwardPanel.tsx";
-import { ReturnsPanel } from "./panels/ReturnsPanel.tsx";
-import { ShareExportBar } from "./ShareExport.tsx";
-import { StoryMode } from "./StoryMode.tsx";
+import { InputRail } from "./InputRail";
+import { ScenarioPresets } from "./ScenarioPresets";
+import { Explainer } from "./Explainer";
+import { CompareToggle, CompareDelta } from "./CompareToggle";
+import { CapitalStackPanel } from "./panels/CapitalStackPanel";
+import { WaterfallPanel } from "./panels/WaterfallPanel";
+import { RollforwardPanel } from "./panels/RollforwardPanel";
+import { ReturnsPanel } from "./panels/ReturnsPanel";
+import { ShareExportBar } from "./ShareExport";
+import { StoryMode } from "./StoryMode";
 
 export function Visualizer() {
   const [storyOpen, setStoryOpen] = useState(false);

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useDealStore } from "@/lib/store.ts";
-import { STORY_SLIDES } from "@/lib/story.ts";
-import { fmtPct, fmtMult, fmtMoney } from "@/lib/format.ts";
+import { useDealStore } from "@/lib/store";
+import { STORY_SLIDES } from "@/lib/story";
+import { fmtPct, fmtMult, fmtMoney } from "@/lib/format";
 
 export function StoryMode({ onExit }: { onExit: () => void }) {
   const [idx, setIdx] = useState(0);

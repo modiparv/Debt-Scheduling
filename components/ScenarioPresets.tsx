@@ -1,7 +1,7 @@
 "use client";
 
-import { useDealStore } from "@/lib/store.ts";
-import { SCENARIO_PRESETS } from "@/lib/scenarios.ts";
+import { useDealStore } from "@/lib/store";
+import { SCENARIO_PRESETS } from "@/lib/scenarios";
 
 export function ScenarioPresets() {
   const loadPreset = useDealStore((s) => s.loadPreset);

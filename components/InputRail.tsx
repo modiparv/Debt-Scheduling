@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useDealStore } from "@/lib/store.ts";
-import { Slider, NumberInput } from "./NumberInput.tsx";
-import { fmtMoney, fmtPct, fmtMult, classNames } from "@/lib/format.ts";
-import type { Tranche, TrancheId } from "@/lib/types.ts";
+import type { ReactNode } from "react";
+import { useDealStore } from "@/lib/store";
+import { Slider, NumberInput } from "./NumberInput";
+import { fmtMoney, fmtPct, fmtMult, classNames } from "@/lib/format";
+import type { Tranche, TrancheId } from "@/lib/types";
 
 function Accordion({
   title,
@@ -13,7 +14,7 @@ function Accordion({
 }: {
   title: string;
   defaultOpen?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -148,7 +149,7 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="fin-label">{label}</span>

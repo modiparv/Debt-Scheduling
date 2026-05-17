@@ -1,7 +1,7 @@
 "use client";
 
-import { useDealStore } from "@/lib/store.ts";
-import { explain } from "@/lib/explainer.ts";
+import { useDealStore } from "@/lib/store";
+import { explain } from "@/lib/explainer";
 import { useEffect, useState } from "react";
 
 export function Explainer() {

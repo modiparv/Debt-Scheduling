@@ -1,7 +1,7 @@
 "use client";
 
-import { useDealStore } from "@/lib/store.ts";
-import { fmtMoney, fmtMult, fmtPct, classNames } from "@/lib/format.ts";
+import { useDealStore } from "@/lib/store";
+import { fmtMoney, fmtMult, fmtPct, classNames } from "@/lib/format";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 function irrBadgeColor(irr: number): string {

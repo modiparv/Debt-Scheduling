@@ -1,5 +1,5 @@
-import type { DealInputs } from "./types.ts";
-import { baseCase, emptyStack } from "./scenarios.ts";
+import type { DealInputs } from "./types";
+import { baseCase, emptyStack } from "./scenarios";
 
 // Each story slide returns the FULL DealInputs to apply, plus the message.
 

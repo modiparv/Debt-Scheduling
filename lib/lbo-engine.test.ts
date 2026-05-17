@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { computeDeal, totalSources, totalUses } from "./lbo-engine.ts";
-import { irr as solveIrr, moic } from "./irr.ts";
-import { baseCase, sweepOff, noJuniorDebt, aggressive2007 } from "./scenarios.ts";
+import { computeDeal, totalSources, totalUses } from "./lbo-engine";
+import { irr as solveIrr, moic } from "./irr";
+import { baseCase, sweepOff, noJuniorDebt, aggressive2007 } from "./scenarios";
 
 describe("irr solver", () => {
   it("solves a simple 2-period stream", () => {

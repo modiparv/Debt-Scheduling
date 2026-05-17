@@ -1,7 +1,7 @@
 "use client";
 
-import { useDealStore } from "@/lib/store.ts";
-import { fmtPct, fmtMult, fmtMoney, classNames } from "@/lib/format.ts";
+import { useDealStore } from "@/lib/store";
+import { fmtPct, fmtMult, fmtMoney, classNames } from "@/lib/format";
 
 export function CompareToggle() {
   const compareMode = useDealStore((s) => s.compareMode);

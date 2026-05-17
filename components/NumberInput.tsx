@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { classNames } from "@/lib/format.ts";
+import { classNames } from "@/lib/format";
 
 interface Props {
   value: number;

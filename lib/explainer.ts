@@ -1,7 +1,7 @@
-import { computeDeal } from "./lbo-engine.ts";
-import type { ChangeEvent } from "./store.ts";
-import type { DealInputs, DealOutputs } from "./types.ts";
-import { fmtMoney, fmtPct, fmtMult } from "./format.ts";
+import { computeDeal } from "./lbo-engine";
+import type { ChangeEvent } from "./store";
+import type { DealInputs, DealOutputs } from "./types";
+import { fmtMoney, fmtPct, fmtMult } from "./format";
 
 const TRANCHE_LABEL: Record<string, string> = {
   existing: "existing debt",

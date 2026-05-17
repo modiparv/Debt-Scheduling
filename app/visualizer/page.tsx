@@ -2,9 +2,9 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Visualizer } from "@/components/Visualizer.tsx";
-import { useDealStore } from "@/lib/store.ts";
-import { decodeDeal } from "@/lib/url-encode.ts";
+import { Visualizer } from "@/components/Visualizer";
+import { useDealStore } from "@/lib/store";
+import { decodeDeal } from "@/lib/url-encode";
 
 function VisualizerWithParams() {
   const params = useSearchParams();
