@@ -11,7 +11,7 @@ function irrColor(irr: number): string {
   return "text-ink";
 }
 
-function HeroMetric({
+function Metric({
   label,
   value,
   accent,
@@ -27,8 +27,8 @@ function HeroMetric({
       <div className="fin-eyebrow mb-2">{label}</div>
       <div
         className={classNames(
-          "font-serif tracking-tightish tabular-nums transition-all duration-500",
-          big ? "text-6xl" : "text-4xl",
+          "font-serif tabular-nums tracking-tightish leading-none transition-all duration-500",
+          big ? "text-4xl lg:text-5xl" : "text-3xl lg:text-4xl",
           accent ?? "text-ink"
         )}
       >
@@ -59,24 +59,28 @@ export function ReturnsPanel() {
         <span className="fin-eyebrow">at exit · year {outputs.exit.year}</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8 pb-8 border-b border-silver">
-        <HeroMetric
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 mb-6 pb-6 border-b border-silver">
+        <Metric
           label="Sponsor IRR"
           value={fmtPct(outputs.sponsorIRR)}
           accent={irrColor(outputs.sponsorIRR)}
           big
         />
-        <HeroMetric label="Sponsor MOIC" value={fmtMult(outputs.sponsorMOIC)} />
-        <HeroMetric label="Equity at Exit" value={fmtMoney(outputs.exit.equityValue)} />
-        <HeroMetric label="Enterprise Value" value={fmtMoney(outputs.exit.enterpriseValue)} />
+        <Metric label="Sponsor MOIC" value={fmtMult(outputs.sponsorMOIC)} />
+        <Metric label="Equity at Exit" value={fmtMoney(outputs.exit.equityValue)} />
+        <Metric label="Enterprise Value" value={fmtMoney(outputs.exit.enterpriseValue)} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 min-h-0">
-        <div className="flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 flex-1 min-h-0">
+        <div className="flex flex-col min-h-[150px]">
           <div className="fin-eyebrow mb-3">Exit allocation · fully diluted</div>
-          <div className="flex-1 min-h-[140px]">
+          <div className="flex-1 min-h-[120px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={allocData} layout="vertical" margin={{ left: 90, right: 12, top: 2, bottom: 2 }}>
+              <BarChart
+                data={allocData}
+                layout="vertical"
+                margin={{ left: 80, right: 12, top: 2, bottom: 2 }}
+              >
                 <XAxis type="number" hide />
                 <YAxis
                   dataKey="name"
@@ -84,6 +88,7 @@ export function ReturnsPanel() {
                   tick={{ fontSize: 10, fill: "#757575" }}
                   axisLine={false}
                   tickLine={false}
+                  width={80}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(0,0,0,0.04)" }}
@@ -133,7 +138,7 @@ export function ReturnsPanel() {
                 <div
                   key={k}
                   className={classNames(
-                    "p-4 rounded-md border text-center transition-colors",
+                    "p-3 rounded-md border text-center transition-colors min-w-0",
                     isBase ? "border-ink bg-platinum" : "border-silver bg-white"
                   )}
                 >
@@ -145,7 +150,7 @@ export function ReturnsPanel() {
                   </div>
                   <div
                     className={classNames(
-                      "font-serif text-2xl tabular-nums",
+                      "font-serif text-xl lg:text-2xl tabular-nums leading-none",
                       irrColor(s.irr)
                     )}
                   >

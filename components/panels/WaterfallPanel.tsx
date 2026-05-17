@@ -4,10 +4,10 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { useDealStore } from "@/lib/store";
 import { fmtMoney, fmtPct, classNames } from "@/lib/format";
-import type { TrancheId, YearRow } from "@/lib/types";
+import type { TrancheId, YearRow, Tranche } from "@/lib/types";
 
 const NICE_LABELS: Record<TrancheId, string> = {
-  existing: "Existing Debt",
+  existing: "Existing",
   revolver: "Revolver",
   tla: "TLA",
   tlb: "TLB",
@@ -18,53 +18,94 @@ const NICE_LABELS: Record<TrancheId, string> = {
   preferred: "Preferred",
 };
 
-function Row({
-  label,
-  value,
-  tone = "neutral",
-  bold = false,
-  indent = 0,
-}: {
+interface FlowItem {
   label: string;
-  value: number;
-  tone?: "neutral" | "positive" | "negative" | "muted";
-  bold?: boolean;
-  indent?: number;
+  amount: number;
+  color: string;
+  trancheId?: TrancheId;
+}
+
+// A horizontal proportional bar — one box per item, sized by share of `scale`.
+function ProportionalBar({
+  items,
+  scale,
+  height = 28,
+}: {
+  items: FlowItem[];
+  scale: number;
+  height?: number;
 }) {
-  const toneClass =
-    tone === "positive"
-      ? "text-ink"
-      : tone === "negative"
-      ? "text-junior-700"
-      : tone === "muted"
-      ? "text-mid"
-      : "text-ink";
+  const safeScale = scale || 1;
   return (
-    <div
-      className={classNames(
-        "flex justify-between items-baseline py-1.5 text-[12px] transition-all duration-300",
-        bold && "font-medium border-t border-silver/60 mt-1 pt-2"
-      )}
-      style={{ paddingLeft: indent * 16 }}
-    >
-      <span className={toneClass}>{label}</span>
-      <span className={classNames("font-mono tabular-nums", toneClass)}>
-        {fmtMoney(value)}
-      </span>
+    <div className="flex w-full rounded-md overflow-hidden border border-silver" style={{ height }}>
+      {items.map((it, i) => {
+        const pct = Math.max(0, (Math.abs(it.amount) / safeScale) * 100);
+        if (pct < 0.5) return null;
+        return (
+          <div
+            key={i}
+            title={`${it.label}: ${fmtMoney(it.amount)}`}
+            className="relative flex items-center justify-center text-[10px] text-white font-medium overflow-hidden transition-all duration-500 hover:brightness-110"
+            style={{
+              width: `${pct}%`,
+              backgroundColor: it.color,
+            }}
+          >
+            <span className="truncate px-1.5">
+              {pct > 8 ? `${it.label}` : ""}
+              {pct > 18 ? ` · ${fmtMoney(it.amount)}` : ""}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function Block({ title, children, accent }: { title: ReactNode; children: ReactNode; accent: string }) {
+function FlowStep({
+  index,
+  title,
+  amount,
+  accent,
+  bar,
+  note,
+  arrowDown = true,
+}: {
+  index: string;
+  title: string;
+  amount?: number;
+  accent: string;
+  bar: ReactNode;
+  note?: ReactNode;
+  arrowDown?: boolean;
+}) {
   return (
-    <div className="mb-4">
-      <div
-        className="text-[10px] uppercase tracking-wider2 font-medium mb-1 pb-1 border-b"
-        style={{ color: accent, borderColor: accent + "33" }}
-      >
-        {title}
+    <div className="relative">
+      <div className="flex items-baseline gap-3 mb-2">
+        <span
+          className="font-serif text-xl leading-none"
+          style={{ color: accent }}
+        >
+          {index}
+        </span>
+        <div className="flex-1 flex items-baseline justify-between">
+          <span className="text-[12px] font-medium text-ink tracking-tight">
+            {title}
+          </span>
+          {typeof amount === "number" && (
+            <span className="text-[12px] font-mono tabular-nums text-ink">
+              {fmtMoney(amount)}
+            </span>
+          )}
+        </div>
       </div>
-      {children}
+      {bar}
+      {note && <div className="text-[11px] text-mid mt-2">{note}</div>}
+      {arrowDown && (
+        <div className="flex justify-center my-3">
+          <div className="text-mid text-lg leading-none" aria-hidden>↓</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -75,27 +116,52 @@ export function WaterfallPanel() {
   const [year, setYear] = useState(1);
 
   const maxYear = outputs.years.length;
-  const yr = Math.min(year, maxYear);
+  const yr = Math.min(Math.max(1, year), maxYear);
   const row: YearRow | undefined = outputs.years[yr - 1];
   if (!row) return null;
 
   const cashIn = yr === 1 ? inputs.startingCash : outputs.years[yr - 2].endingCash;
   const cashAvail = cashIn + row.preFinancing;
-  const activeIds = inputs.stack.filter((t) => t.enabled).map((t) => t.id);
+  const cashAfterMandatory = cashAvail - row.mandatoryAmort + row.revolverDraw;
+
+  const trancheById = new Map<TrancheId, Tranche>();
+  inputs.stack.forEach((t) => trancheById.set(t.id, t));
+
+  // Build per-step flow items.
+  const generationItems: FlowItem[] = [
+    row.cfo > 0 && { label: "CFO", amount: row.cfo, color: "#3F4F7A" },
+    row.cfi !== 0 && { label: "Capex", amount: -row.cfi, color: "#8A95B0" },
+    cashIn > 0 && { label: "Opening cash", amount: cashIn, color: "#D9DEE9" },
+  ].filter(Boolean) as FlowItem[];
+
+  const mandatoryItems: FlowItem[] = [];
+  const sweepItems: FlowItem[] = [];
+  for (const t of inputs.stack) {
+    if (!t.enabled) continue;
+    const m = row.trancheMandatory[t.id];
+    const o = row.trancheOptional[t.id];
+    if (m > 0.01) mandatoryItems.push({ label: NICE_LABELS[t.id], amount: m, color: t.color, trancheId: t.id });
+    if (o > 0.01) sweepItems.push({ label: NICE_LABELS[t.id], amount: o, color: t.color, trancheId: t.id });
+  }
+
+  // Use the largest single value as the bar scale so all bars are comparable
+  // within the same year. Cash available is usually the biggest.
+  const scale = Math.max(cashAvail, row.mandatoryAmort, row.sweepPool, row.endingCash, 1);
 
   return (
-    <div className="fin-card h-full flex flex-col">
+    <div className="fin-card h-full flex flex-col overflow-hidden">
       <div className="flex items-baseline justify-between mb-4">
         <div>
-          <h3 className="fin-header text-2xl">Debt Waterfall</h3>
+          <h3 className="fin-header text-2xl">Cash Waterfall · Year {yr}</h3>
           <p className="text-[11px] text-mid mt-1">
-            Year {yr} of {maxYear} · drag the scrubber to step through the hold.
+            Drag the year scrubber to walk through the hold. Each bar is sized
+            relative to the year&rsquo;s peak flow.
           </p>
         </div>
         <span className="fin-eyebrow">cascade · senior → junior</span>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-5">
         <input
           type="range"
           min={1}
@@ -107,91 +173,141 @@ export function WaterfallPanel() {
         />
         <div className="flex justify-between text-[10px] text-mid mt-1 font-mono tabular-nums">
           {outputs.years.map((r) => (
-            <span key={r.year}>{r.year}</span>
+            <span
+              key={r.year}
+              className={r.year === yr ? "text-ink font-semibold" : ""}
+            >
+              {r.year}
+            </span>
           ))}
         </div>
       </div>
 
-      <div className="overflow-y-auto flex-1 pr-1 grid grid-cols-1 md:grid-cols-2 gap-x-8">
-        <div>
-          <Block title="① Cash generation" accent="#3F4F7A">
-            <Row label="Cash from operations" value={row.cfo} />
-            <Row label="Capex (investing)" value={row.cfi} tone="negative" />
-            <Row label="Opening cash" value={cashIn} tone="muted" />
-            <Row label="Cash available" value={cashAvail} bold />
-          </Block>
+      <div className="overflow-y-auto flex-1 pr-1">
+        <FlowStep
+          index="①"
+          title="Cash generated this year"
+          amount={cashAvail}
+          accent="#3F4F7A"
+          bar={<ProportionalBar items={generationItems} scale={scale} />}
+          note={`From operations ${fmtMoney(row.cfo)} · less capex ${fmtMoney(-row.cfi)} · plus opening cash ${fmtMoney(cashIn)}`}
+        />
 
-          <Block title="② Mandatory amortization" accent="#1F2A4A">
-            {activeIds.map((id) => {
-              const amt = row.trancheMandatory[id];
-              if (amt <= 0.01) return null;
-              return (
-                <Row
-                  key={`m-${id}`}
-                  label={NICE_LABELS[id]}
-                  value={-amt}
-                  indent={1}
-                  tone="negative"
-                />
-              );
-            })}
-            {row.mandatoryAmort === 0 && (
-              <div className="text-[11px] text-mid italic py-1">No scheduled amort this year.</div>
-            )}
-            <Row label="Total mandatory" value={-row.mandatoryAmort} bold />
-          </Block>
-        </div>
-
-        <div>
-          <Block
-            title="③ Revolver gate"
-            accent={row.revolverDraw > 0 ? "#8C6F1F" : "#3F4F7A"}
-          >
-            <Row
-              label="Cash after mandatory"
-              value={cashAvail - row.mandatoryAmort + row.revolverDraw}
-              bold
-            />
-            {row.revolverDraw > 0 ? (
-              <Row label="Revolver drawn to top up min cash" value={row.revolverDraw} tone="negative" indent={1} />
+        <FlowStep
+          index="②"
+          title="Mandatory amortization (no choice)"
+          amount={-row.mandatoryAmort}
+          accent="#1F2A4A"
+          bar={
+            mandatoryItems.length > 0 ? (
+              <ProportionalBar items={mandatoryItems} scale={scale} />
             ) : (
-              <div className="text-[11px] text-mid italic py-1">No revolver draw — cash surplus.</div>
-            )}
-          </Block>
+              <EmptyBar label="No scheduled amort this year." />
+            )
+          }
+        />
 
-          {row.sweepPool > 0 ? (
-            <Block
-              title={`④ Optional sweep · ${fmtPct(inputs.exit.sweepPct)} of excess`}
-              accent="#B89A3C"
-            >
-              {activeIds.map((id) => {
-                const amt = row.trancheOptional[id];
-                if (amt <= 0.01) return null;
-                return (
-                  <Row
-                    key={`o-${id}`}
-                    label={NICE_LABELS[id]}
-                    value={-amt}
-                    indent={1}
-                  />
-                );
-              })}
-              <Row label="Total swept" value={-row.sweepPool} bold />
-            </Block>
-          ) : (
-            <Block title="④ Optional sweep" accent="#B89A3C">
-              <div className="text-[11px] text-mid italic py-1">
-                No sweep — sweep % is 0 or no excess cash.
-              </div>
-            </Block>
-          )}
+        <FlowStep
+          index="③"
+          title={row.revolverDraw > 0 ? "Revolver drawn — cash shortfall" : "Cash after mandatory"}
+          amount={row.revolverDraw > 0 ? row.revolverDraw : cashAfterMandatory}
+          accent={row.revolverDraw > 0 ? "#8C6F1F" : "#3F4F7A"}
+          bar={
+            row.revolverDraw > 0 ? (
+              <ProportionalBar
+                items={[{ label: "Revolver draw", amount: row.revolverDraw, color: "#8C6F1F" }]}
+                scale={scale}
+              />
+            ) : (
+              <ProportionalBar
+                items={[{ label: "Remaining cash", amount: cashAfterMandatory, color: "#3F4F7A" }]}
+                scale={scale}
+              />
+            )
+          }
+          note={
+            row.revolverDraw > 0
+              ? "Operating cash didn't cover mandatory amort. The revolver topped up to the minimum balance."
+              : `${fmtMoney(cashAfterMandatory)} left, minimum cash ${fmtMoney(inputs.exit.minCash)}.`
+          }
+        />
 
-          <Block title="⑤ Period end" accent="#1A1A1A">
-            <Row label="Ending cash" value={row.endingCash} bold />
-            <Row label="Total debt remaining" value={row.totalDebt} tone="muted" />
-            <Row label="Leverage (Debt / EBITDA)" value={row.leverageRatio} tone="muted" />
-          </Block>
-        </div>
+        <FlowStep
+          index="④"
+          title={`Optional sweep · ${fmtPct(inputs.exit.sweepPct)} of excess`}
+          amount={-row.sweepPool}
+          accent="#B89A3C"
+          bar={
+            sweepItems.length > 0 ? (
+              <ProportionalBar items={sweepItems} scale={scale} />
+            ) : (
+              <EmptyBar label="No sweep this year." />
+            )
+          }
+          note={
+            row.sweepPool > 0
+              ? `Excess cash paid down debt in seniority order: ${sweepItems
+                  .map((i) => `${i.label} ${fmtMoney(i.amount)}`)
+                  .join(" · ")}`
+              : "Either sweep % is 0 or there was no excess cash to sweep."
+          }
+        />
+
+        <FlowStep
+          index="⑤"
+          title="Where the year ended"
+          accent="#1A1A1A"
+          arrowDown={false}
+          bar={
+            <div className="grid grid-cols-3 gap-3 mt-1">
+              <EndCell label="Ending cash" value={row.endingCash} accent="#3F4F7A" />
+              <EndCell label="Total debt" value={row.totalDebt} accent="#1A1A1A" />
+              <EndCell
+                label="Leverage"
+                value={row.leverageRatio}
+                accent="#B89A3C"
+                suffix="x"
+                isMultiple
+              />
+            </div>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+function EmptyBar({ label }: { label: string }) {
+  return (
+    <div className="w-full h-7 rounded-md border border-dashed border-silver flex items-center justify-center text-[10px] text-mid italic">
+      {label}
+    </div>
+  );
+}
+
+function EndCell({
+  label,
+  value,
+  accent,
+  suffix = "",
+  isMultiple = false,
+}: {
+  label: string;
+  value: number;
+  accent: string;
+  suffix?: string;
+  isMultiple?: boolean;
+}) {
+  return (
+    <div
+      className="rounded-md border border-silver bg-white p-3 text-center"
+      style={{ borderLeftColor: accent, borderLeftWidth: 3 }}
+    >
+      <div className="fin-eyebrow mb-1">{label}</div>
+      <div className="font-serif text-xl text-ink tabular-nums">
+        {isMultiple
+          ? `${value.toFixed(2)}${suffix}`
+          : fmtMoney(value)}
       </div>
     </div>
   );
