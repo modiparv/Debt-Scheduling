@@ -20,7 +20,6 @@ export function RollforwardPanel() {
 
   const activeTranches = inputs.stack.filter((t) => t.enabled);
 
-  // Build chart data: one point per year, balance per tranche + leverage.
   const data = outputs.years.map((row) => {
     const point: Record<string, number> = { year: row.year, leverage: row.leverageRatio };
     for (const t of activeTranches) {
@@ -29,43 +28,72 @@ export function RollforwardPanel() {
     return point;
   });
 
-  // Add Y0 starting point.
   const y0: Record<string, number> = { year: 0, leverage: 0 };
   for (const t of activeTranches) y0[t.id] = t.amount;
   data.unshift(y0);
 
   return (
     <div className="fin-card h-full flex flex-col">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="fin-header">Tranche Balance Rollforward</h3>
-        <span className="text-xs text-navySoft">balances ↘ · leverage —</span>
+      <div className="flex items-baseline justify-between mb-5">
+        <div>
+          <h3 className="fin-header text-2xl">Tranche Rollforward</h3>
+          <p className="text-[11px] text-mid mt-1">
+            Balances year-by-year. Leverage (dashed) on the right axis.
+          </p>
+        </div>
+        <span className="fin-eyebrow">close → exit</span>
       </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-            <CartesianGrid stroke="#E8F0FE" />
-            <XAxis dataKey="year" stroke="#1B3B6B" fontSize={11} />
+          <ComposedChart data={data} margin={{ top: 8, right: 40, left: 8, bottom: 8 }}>
+            <CartesianGrid stroke="#F5F5F5" vertical={false} />
+            <XAxis
+              dataKey="year"
+              stroke="#757575"
+              fontSize={11}
+              axisLine={{ stroke: "#E0E0E0" }}
+              tickLine={false}
+              tick={{ fill: "#757575" }}
+              label={{ value: "Year", position: "insideBottom", offset: -2, fontSize: 10, fill: "#8C8C8C" }}
+            />
             <YAxis
               yAxisId="left"
-              stroke="#1B3B6B"
+              stroke="#757575"
               fontSize={11}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#757575" }}
               tickFormatter={(v) => `$${v.toFixed(0)}`}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
-              stroke="#0B1F3A"
+              stroke="#757575"
               fontSize={11}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#757575" }}
               tickFormatter={(v) => `${v.toFixed(1)}x`}
             />
             <Tooltip
+              cursor={{ stroke: "#E0E0E0" }}
+              contentStyle={{
+                fontSize: 11,
+                border: "1px solid #E0E0E0",
+                borderRadius: 6,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              }}
+              labelStyle={{ color: "#757575", fontWeight: 500 }}
               formatter={(value: any, name: any) =>
-                name === "leverage"
+                name === "Leverage"
                   ? [fmtMult(Number(value)), "Leverage"]
                   : [fmtMoney(Number(value)), String(name)]
               }
             />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Legend
+              wrapperStyle={{ fontSize: 10, color: "#757575", paddingTop: 8 }}
+              iconType="line"
+            />
             {activeTranches.map((t) => (
               <Line
                 key={t.id}
@@ -73,7 +101,7 @@ export function RollforwardPanel() {
                 dataKey={t.id}
                 name={t.label}
                 stroke={t.color}
-                strokeWidth={2}
+                strokeWidth={1.75}
                 dot={false}
                 yAxisId="left"
                 animationDuration={400}
@@ -83,9 +111,9 @@ export function RollforwardPanel() {
               type="monotone"
               dataKey="leverage"
               name="Leverage"
-              stroke="#0B1F3A"
-              strokeWidth={2.5}
-              strokeDasharray="6 4"
+              stroke="#1A1A1A"
+              strokeWidth={2}
+              strokeDasharray="4 3"
               dot={false}
               yAxisId="right"
               animationDuration={400}

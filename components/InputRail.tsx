@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useDealStore } from "@/lib/store";
 import { Slider, NumberInput } from "./NumberInput";
 import { fmtMoney, fmtPct, fmtMult, classNames } from "@/lib/format";
-import type { Tranche, TrancheId } from "@/lib/types";
+import type { Tranche } from "@/lib/types";
 
 function Accordion({
   title,
@@ -18,16 +18,25 @@ function Accordion({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-senior-100">
+    <div className="border-b border-silver/70">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex justify-between items-center py-3 px-4 hover:bg-senior-50"
+        className="w-full flex justify-between items-center py-3 px-5 hover:bg-platinum transition-colors"
       >
-        <span className="fin-header text-sm">{title}</span>
-        <span className="text-navySoft text-xs">{open ? "−" : "+"}</span>
+        <span className="fin-eyebrow">{title}</span>
+        <span className="text-mid text-[10px]">{open ? "−" : "+"}</span>
       </button>
-      {open && <div className="px-4 pb-4 space-y-3">{children}</div>}
+      {open && <div className="px-5 pb-5 pt-1 space-y-4">{children}</div>}
     </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="fin-label">{label}</span>
+      {children}
+    </label>
   );
 }
 
@@ -35,39 +44,32 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
   const toggle = useDealStore((s) => s.toggleTranche);
   const patch = useDealStore((s) => s.patchTranche);
 
-  const tone =
-    tranche.seniority === "senior"
-      ? "border-l-senior-500 bg-senior-50/40"
-      : tranche.seniority === "junior"
-      ? "border-l-junior-500 bg-junior-50/40"
-      : "border-l-equity-500 bg-equity-50/40";
-
   return (
     <div
       className={classNames(
-        "border border-senior-100 border-l-4 rounded p-3 space-y-2",
-        tone,
+        "border-l-[3px] rounded-r border-y border-r border-silver/70 bg-white p-3 transition-opacity",
         !tranche.enabled && "opacity-50"
       )}
+      style={{ borderLeftColor: tranche.color }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={tranche.enabled}
             onChange={(e) => toggle(tranche.id, e.target.checked)}
-            className="accent-senior-500"
+            className="accent-ink"
           />
-          <span className="text-sm font-semibold text-navy">{tranche.label}</span>
+          <span className="text-[12px] text-ink font-medium">{tranche.label}</span>
         </label>
-        <span className="text-xs text-navySoft font-mono">
+        <span className="text-[11px] text-mid font-mono tabular-nums">
           {fmtMoney(tranche.amount)}
         </span>
       </div>
 
       {tranche.enabled && (
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <Field label="Amount ($)">
+          <Field label="Amount">
             <NumberInput
               value={tranche.amount}
               onChange={(n) => patch(tranche.id, { amount: n })}
@@ -96,7 +98,7 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
             />
           </Field>
           {tranche.id !== "preferred" && tranche.id !== "revolver" && (
-            <Field label="Amort %">
+            <Field label="Amort">
               <NumberInput
                 value={tranche.amortPct * 100}
                 onChange={(n) => patch(tranche.id, { amortPct: n / 100 })}
@@ -132,28 +134,21 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
               />
             </Field>
           )}
-          <label className="col-span-2 flex items-center gap-2">
+          <label className="col-span-2 flex items-center gap-2 pt-1">
             <input
               type="checkbox"
               checked={tranche.prepayable}
               onChange={(e) =>
                 patch(tranche.id, { prepayable: e.target.checked })
               }
-              className="accent-senior-500"
+              className="accent-ink"
             />
-            <span className="fin-label">Subject to cash sweep</span>
+            <span className="text-[10px] uppercase tracking-wider2 text-mid">
+              Subject to cash sweep
+            </span>
           </label>
         </div>
       )}
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="fin-label">{label}</span>
-      {children}
     </div>
   );
 }
@@ -167,24 +162,29 @@ export function InputRail() {
   const patchPurchase = useDealStore((s) => s.patchPurchase);
 
   const gap = outputs.gap;
-  const gapColor = Math.abs(gap) < 1 ? "text-equity-700" : "text-junior-700";
+  const balanced = Math.abs(gap) < 1;
 
   return (
-    <aside className="w-full lg:w-[380px] lg:max-w-[380px] shrink-0 bg-white border-r border-senior-100 overflow-y-auto">
-      <div className="p-4 border-b border-senior-100 bg-cream">
-        <div className="text-xs uppercase tracking-wide text-navySoft">Sources / Uses</div>
-        <div className="flex justify-between items-baseline mt-1">
-          <span className="text-sm font-mono text-navy">
+    <aside className="w-full lg:w-[380px] lg:max-w-[380px] shrink-0 bg-white border-r border-silver overflow-y-auto no-print">
+      <div className="px-5 py-5 border-b border-silver bg-white">
+        <div className="fin-eyebrow mb-2">Sources / Uses</div>
+        <div className="flex justify-between items-baseline">
+          <span className="text-[13px] font-mono tabular-nums text-ink">
             {fmtMoney(outputs.sourcesTotal)} / {fmtMoney(outputs.usesTotal)}
           </span>
-          <span className={classNames("text-sm font-mono font-semibold", gapColor)}>
-            Gap {fmtMoney(gap)}
+          <span
+            className={classNames(
+              "text-[11px] font-mono tabular-nums tracking-tight",
+              balanced ? "text-ink" : "text-junior-700"
+            )}
+          >
+            {balanced ? "Balanced" : `Gap ${fmtMoney(gap)}`}
           </span>
         </div>
       </div>
 
       <Accordion title="Deal Setup">
-        <Field label="Purchase Price ($)">
+        <Field label="Purchase price">
           <NumberInput
             value={inputs.purchasePrice}
             onChange={(n) => patchPurchase({ purchasePrice: n })}
@@ -192,7 +192,7 @@ export function InputRail() {
             min={0}
           />
         </Field>
-        <Field label="Fees ($)">
+        <Field label="Fees">
           <NumberInput
             value={inputs.fees}
             onChange={(n) => patchPurchase({ fees: n })}
@@ -200,7 +200,7 @@ export function InputRail() {
             min={0}
           />
         </Field>
-        <Field label="Opening Cash ($)">
+        <Field label="Opening cash">
           <NumberInput
             value={inputs.startingCash}
             onChange={(n) => patchPurchase({ startingCash: n })}
@@ -212,25 +212,25 @@ export function InputRail() {
 
       <Accordion title="Operating Drivers">
         <Slider
-          label="Revenue Growth"
+          label="Revenue growth"
           value={inputs.operating.revenueGrowth}
           onChange={(n) => patchOperating({ revenueGrowth: n })}
-          min={-0.10}
+          min={-0.1}
           max={0.25}
           step={0.005}
           format={fmtPct}
         />
         <Slider
-          label="EBITDA Margin (Y1)"
+          label="EBITDA margin (Y1)"
           value={inputs.operating.ebitdaMargin}
           onChange={(n) => patchOperating({ ebitdaMargin: n })}
           min={0.05}
-          max={0.50}
+          max={0.5}
           step={0.005}
           format={fmtPct}
         />
         <Slider
-          label="Margin Trajectory (annual Δ)"
+          label="Margin trajectory (Δ / yr)"
           value={inputs.operating.marginTrajectory}
           onChange={(n) => patchOperating({ marginTrajectory: n })}
           min={-0.02}
@@ -239,33 +239,33 @@ export function InputRail() {
           format={(n) => `${n >= 0 ? "+" : ""}${(n * 100).toFixed(1)}%`}
         />
         <Slider
-          label="CapEx % of Revenue"
+          label="CapEx % of revenue"
           value={inputs.operating.capexPct}
           onChange={(n) => patchOperating({ capexPct: n })}
           min={0}
-          max={0.20}
+          max={0.2}
           step={0.005}
           format={fmtPct}
         />
         <Slider
-          label="NWC % of Revenue"
+          label="NWC % of revenue"
           value={inputs.operating.nwcPct}
           onChange={(n) => patchOperating({ nwcPct: n })}
           min={0}
-          max={0.30}
+          max={0.3}
           step={0.005}
           format={fmtPct}
         />
         <Slider
-          label="Tax Rate"
+          label="Tax rate"
           value={inputs.operating.taxRate}
           onChange={(n) => patchOperating({ taxRate: n })}
           min={0}
-          max={0.40}
+          max={0.4}
           step={0.005}
           format={fmtPct}
         />
-        <Field label="Starting Revenue ($)">
+        <Field label="Starting revenue">
           <NumberInput
             value={inputs.operating.revenueY1}
             onChange={(n) => patchOperating({ revenueY1: n })}
@@ -275,51 +275,56 @@ export function InputRail() {
         </Field>
       </Accordion>
 
-      <Accordion title="Capital Stack" defaultOpen={true}>
-        {inputs.stack.map((t) => (
-          <TrancheCard key={t.id} tranche={t} />
-        ))}
-        <div className="pt-2 space-y-2">
-          <Field label="Sponsor Equity ($)">
-            <NumberInput
-              value={inputs.equity.sponsor}
-              onChange={(n) => patchEquity({ sponsor: n })}
-              step={10}
-              min={0}
-            />
-          </Field>
-          <Field label="Management Equity ($)">
-            <NumberInput
-              value={inputs.equity.mgmt}
-              onChange={(n) => patchEquity({ mgmt: n })}
-              step={5}
-              min={0}
-            />
-          </Field>
-          <Field label="New Equity ($)">
-            <NumberInput
-              value={inputs.equity.newEquity}
-              onChange={(n) => patchEquity({ newEquity: n })}
-              step={5}
-              min={0}
-            />
-          </Field>
-          <Field label="Mgmt Performance Pool (%)">
-            <NumberInput
-              value={inputs.equity.mgmtPool * 100}
-              onChange={(n) => patchEquity({ mgmtPool: n / 100 })}
-              step={0.5}
-              min={0}
-              max={25}
-              suffix="%"
-            />
-          </Field>
+      <Accordion title="Capital Stack">
+        <div className="space-y-2">
+          {inputs.stack.map((t) => (
+            <TrancheCard key={t.id} tranche={t} />
+          ))}
+        </div>
+        <div className="pt-3 space-y-3 border-t border-silver/70 mt-3">
+          <div className="fin-eyebrow">Equity</div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Sponsor">
+              <NumberInput
+                value={inputs.equity.sponsor}
+                onChange={(n) => patchEquity({ sponsor: n })}
+                step={10}
+                min={0}
+              />
+            </Field>
+            <Field label="Management">
+              <NumberInput
+                value={inputs.equity.mgmt}
+                onChange={(n) => patchEquity({ mgmt: n })}
+                step={5}
+                min={0}
+              />
+            </Field>
+            <Field label="New equity">
+              <NumberInput
+                value={inputs.equity.newEquity}
+                onChange={(n) => patchEquity({ newEquity: n })}
+                step={5}
+                min={0}
+              />
+            </Field>
+            <Field label="Mgmt pool">
+              <NumberInput
+                value={inputs.equity.mgmtPool * 100}
+                onChange={(n) => patchEquity({ mgmtPool: n / 100 })}
+                step={0.5}
+                min={0}
+                max={25}
+                suffix="%"
+              />
+            </Field>
+          </div>
         </div>
       </Accordion>
 
       <Accordion title="Exit Assumptions">
         <Slider
-          label="Exit Year"
+          label="Exit year"
           value={inputs.exit.exitYear}
           onChange={(n) => patchExit({ exitYear: Math.round(n) })}
           min={3}
@@ -328,7 +333,7 @@ export function InputRail() {
           format={(n) => `Year ${Math.round(n)}`}
         />
         <Slider
-          label="Exit EBITDA Multiple"
+          label="Exit EBITDA multiple"
           value={inputs.exit.exitMultiple}
           onChange={(n) => patchExit({ exitMultiple: n })}
           min={4}
@@ -337,7 +342,7 @@ export function InputRail() {
           format={fmtMult}
         />
         <Slider
-          label="Cash Sweep %"
+          label="Cash sweep"
           value={inputs.exit.sweepPct}
           onChange={(n) => patchExit({ sweepPct: n })}
           min={0}
@@ -345,7 +350,7 @@ export function InputRail() {
           step={0.05}
           format={fmtPct}
         />
-        <Field label="Minimum Cash Balance ($)">
+        <Field label="Minimum cash">
           <NumberInput
             value={inputs.exit.minCash}
             onChange={(n) => patchExit({ minCash: n })}

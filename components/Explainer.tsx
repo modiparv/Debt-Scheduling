@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useDealStore } from "@/lib/store";
 import { explain } from "@/lib/explainer";
-import { useEffect, useState } from "react";
 
 export function Explainer() {
   const lastChange = useDealStore((s) => s.lastChange);
@@ -12,9 +12,6 @@ export function Explainer() {
   const [prevInputs, setPrevInputs] = useState(inputs);
 
   useEffect(() => {
-    // Capture inputs before next change for delta calc. Synchronous "before"
-    // is impossible without a side-channel, so we snapshot AFTER each render
-    // and use it on the next change. Good enough for the educational signal.
     const t = setTimeout(() => setPrevInputs(inputs), 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -23,10 +20,12 @@ export function Explainer() {
   const exp = explain(lastChange, prevInputs, inputs, outputs);
 
   return (
-    <div className="fin-card border-l-4 border-l-equity-500">
-      <div className="fin-label mb-1">What just happened?</div>
-      <div className="text-sm font-semibold text-navy mb-1">{exp.headline}</div>
-      <div className="text-sm text-navySoft">{exp.detail}</div>
+    <div className="fin-card border-l-[3px] border-l-champagne">
+      <div className="fin-eyebrow mb-3">What just happened</div>
+      <div className="font-serif text-xl text-ink mb-2 tracking-tightish">
+        {exp.headline}
+      </div>
+      <p className="text-[12px] text-mid leading-relaxed">{exp.detail}</p>
     </div>
   );
 }

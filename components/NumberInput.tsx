@@ -45,8 +45,8 @@ export function NumberInput({
   };
 
   return (
-    <div className={classNames("inline-flex items-center gap-1", className)}>
-      {prefix && <span className="text-xs text-navySoft">{prefix}</span>}
+    <div className={classNames("inline-flex items-center gap-1.5", className)}>
+      {prefix && <span className="text-[10px] text-mid">{prefix}</span>}
       <input
         type="number"
         step={step}
@@ -62,9 +62,9 @@ export function NumberInput({
             (e.target as HTMLInputElement).blur();
           }
         }}
-        className="fin-input w-24 text-right"
+        className="fin-input w-full text-right tabular-nums"
       />
-      {suffix && <span className="text-xs text-navySoft">{suffix}</span>}
+      {suffix && <span className="text-[10px] text-mid">{suffix}</span>}
     </div>
   );
 }
@@ -82,9 +82,9 @@ interface SliderProps {
 export function Slider({ value, onChange, min, max, step = 0.01, label, format }: SliderProps) {
   return (
     <label className="block">
-      <div className="flex justify-between text-xs mb-1">
+      <div className="flex justify-between text-[11px] mb-1.5">
         <span className="fin-label">{label}</span>
-        <span className="text-editable font-mono">
+        <span className="text-ink font-mono tabular-nums">
           {format ? format(value) : value.toFixed(2)}
         </span>
       </div>
@@ -95,7 +95,7 @@ export function Slider({ value, onChange, min, max, step = 0.01, label, format }
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-senior-500"
+        className="w-full"
       />
     </label>
   );

@@ -16,44 +16,51 @@ export function Visualizer() {
   const [storyOpen, setStoryOpen] = useState(false);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-platinum/40">
       <InputRail />
-      <main className="flex-1 p-4 overflow-hidden">
+      <main className="flex-1 px-6 lg:px-10 py-8 overflow-hidden space-y-6">
         {storyOpen && <StoryMode onExit={() => setStoryOpen(false)} />}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3 flex-wrap">
+
+        <header className="flex flex-wrap items-center justify-between gap-4 no-print">
+          <div className="flex items-center gap-4 flex-wrap">
             <ScenarioPresets />
             <button
               onClick={() => setStoryOpen(true)}
-              className="px-3 py-1 rounded-full text-xs font-semibold bg-equity-700 text-white hover:bg-equity-500"
+              className="text-[11px] uppercase tracking-wider2 text-mid hover:text-ink border border-silver hover:border-mid px-3 py-1 rounded-full transition-colors"
             >
-              ▶ Story mode
+              ▸ Story mode
             </button>
           </div>
           <CompareToggle />
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4">
-          <div className="h-[440px]">
-            <CapitalStackPanel />
-          </div>
-          <div className="h-[440px]">
-            <WaterfallPanel />
-          </div>
-          <div className="h-[400px]">
-            <RollforwardPanel />
-          </div>
-          <div className="h-[400px]">
-            <ReturnsPanel />
-          </div>
-        </div>
+        {/* 1. Outcome on top */}
+        <section className="h-[300px]">
+          <ReturnsPanel />
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* 2. Capital stack — wider canvas */}
+        <section className="h-[520px]">
+          <CapitalStackPanel />
+        </section>
+
+        {/* 3. Rollforward — wider canvas */}
+        <section className="h-[480px]">
+          <RollforwardPanel />
+        </section>
+
+        {/* 4. Waterfall as the drill-down */}
+        <section className="h-[640px]">
+          <WaterfallPanel />
+        </section>
+
+        {/* 5. Explainer + compare */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Explainer />
           </div>
           <CompareDelta />
-        </div>
+        </section>
 
         <ShareExportBar />
       </main>

@@ -42,28 +42,29 @@ export function ShareExportBar() {
   }
 
   return (
-    <div className="fin-card mt-4 flex flex-wrap items-center gap-3">
+    <div className="fin-card flex flex-wrap items-center gap-3 no-print">
+      <div className="fin-eyebrow mr-2">Share &amp; export</div>
       <button
         onClick={copyShareUrl}
-        className="px-3 py-1.5 rounded text-xs font-semibold bg-navy text-white hover:bg-navySoft transition"
+        className="text-[11px] uppercase tracking-wider2 text-ink border border-ink px-3 py-1.5 rounded-full hover:bg-ink hover:text-white transition-colors"
       >
-        {copied ? "Link copied ✓" : "Copy share link"}
+        {copied ? "Link copied ·" : "Copy share link"}
       </button>
       <button
         onClick={exportJson}
-        className="px-3 py-1.5 rounded text-xs font-semibold border border-senior-300 text-navy hover:bg-senior-50"
+        className="text-[11px] uppercase tracking-wider2 text-mid border border-silver px-3 py-1.5 rounded-full hover:text-ink hover:border-mid transition-colors"
       >
         Export JSON
       </button>
-      <label className="px-3 py-1.5 rounded text-xs font-semibold border border-senior-300 text-navy hover:bg-senior-50 cursor-pointer">
+      <label className="text-[11px] uppercase tracking-wider2 text-mid border border-silver px-3 py-1.5 rounded-full hover:text-ink hover:border-mid transition-colors cursor-pointer">
         Import JSON
         <input type="file" accept="application/json" onChange={importJson} className="hidden" />
       </label>
       <button
         onClick={() => window.print()}
-        className="px-3 py-1.5 rounded text-xs font-semibold border border-senior-300 text-navy hover:bg-senior-50"
+        className="text-[11px] uppercase tracking-wider2 text-mid border border-silver px-3 py-1.5 rounded-full hover:text-ink hover:border-mid transition-colors"
       >
-        Print / save PDF
+        Print · save PDF
       </button>
     </div>
   );

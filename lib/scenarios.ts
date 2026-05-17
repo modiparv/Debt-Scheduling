@@ -15,7 +15,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "senior",
-      color: "#1F4DAA",
+      color: "#0E142B",
     },
     {
       id: "revolver",
@@ -29,7 +29,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "senior",
-      color: "#3B6FD1",
+      color: "#1F2A4A",
     },
     {
       id: "tla",
@@ -43,7 +43,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "senior",
-      color: "#7AA8F0",
+      color: "#3F4F7A",
     },
     {
       id: "tlb",
@@ -57,7 +57,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "senior",
-      color: "#C7DBFE",
+      color: "#8A95B0",
     },
     {
       id: "sr_notes",
@@ -71,7 +71,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "senior",
-      color: "#F08035",
+      color: "#5E5E5E",
     },
     {
       id: "sub_notes",
@@ -85,7 +85,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0.01,
       seniority: "junior",
-      color: "#FFB077",
+      color: "#B89A3C",
     },
     {
       id: "mezz",
@@ -99,7 +99,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0.03,
       seniority: "junior",
-      color: "#FFDDBF",
+      color: "#D4AF37",
     },
     {
       id: "seller",
@@ -113,7 +113,7 @@ export function emptyStack(): Tranche[] {
       prepayable: true,
       kicker: 0,
       seniority: "junior",
-      color: "#C25F1A",
+      color: "#8C6F1F",
     },
     {
       id: "preferred",
@@ -127,7 +127,7 @@ export function emptyStack(): Tranche[] {
       prepayable: false,
       kicker: 0.02,
       seniority: "preferred",
-      color: "#7F3F8F",
+      color: "#5E3A6B",
     },
   ];
 }

@@ -3,27 +3,86 @@
 @tailwind utilities;
 
 :root {
-  --cream: #FBF7EE;
-  --ink: #0B1F3A;
+  --bg: #FFFFFF;
+  --ink: #2B2B2B;
+  --mid: #757575;
 }
 
 html, body {
-  background-color: var(--cream);
+  background-color: var(--bg);
   color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.fin-input {
-  @apply bg-white border border-senior-100 rounded px-2 py-1 text-editable font-mono text-sm focus:outline-none focus:ring-2 focus:ring-senior-300;
+@layer components {
+  .fin-card {
+    @apply bg-white rounded-lg border border-silver shadow-soft p-6;
+  }
+
+  .fin-header {
+    @apply font-serif text-ink tracking-tightish;
+  }
+
+  .fin-eyebrow {
+    @apply text-[10px] uppercase tracking-wider2 text-mid font-medium;
+  }
+
+  .fin-label {
+    @apply text-[10px] uppercase tracking-wider2 text-mid font-medium;
+  }
+
+  .fin-input {
+    @apply bg-white border border-silver rounded px-2 py-1 text-ink font-mono text-xs focus:outline-none focus:border-ink transition-colors;
+  }
+
+  .fin-divider {
+    @apply border-b border-silver/70;
+  }
+
+  .fin-pill {
+    @apply px-3 py-1 rounded-full text-[11px] font-medium tracking-tight border border-silver text-ink bg-white hover:bg-platinum hover:border-mid transition-colors;
+  }
+
+  .fin-pill-active {
+    @apply bg-ink text-white border-ink hover:bg-ink hover:border-ink;
+  }
+
+  .fin-cta {
+    @apply px-5 py-2.5 rounded-md text-sm font-medium tracking-tight bg-ink text-white hover:bg-charcoal transition-colors;
+  }
+
+  .fin-cta-gold {
+    @apply px-5 py-2.5 rounded-md text-sm font-medium tracking-tight bg-champagne text-charcoal hover:bg-champagneDeep transition-colors;
+  }
 }
 
-.fin-card {
-  @apply bg-white rounded-lg shadow-sm border border-senior-100 p-4;
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: #E0E0E0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #2B2B2B;
+  cursor: pointer;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 0 1px #2B2B2B;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #2B2B2B;
+  cursor: pointer;
+  border: 2px solid #FFFFFF;
 }
 
-.fin-header {
-  @apply text-navy font-semibold tracking-tight;
-}
-
-.fin-label {
-  @apply text-xs uppercase tracking-wide text-navySoft;
+@media print {
+  .no-print { display: none !important; }
 }
