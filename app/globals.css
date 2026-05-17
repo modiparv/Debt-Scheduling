@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #FBF7EE;
+  --ink: #0B1F3A;
+}
+
+html, body {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+
+.fin-input {
+  @apply bg-white border border-senior-100 rounded px-2 py-1 text-editable font-mono text-sm focus:outline-none focus:ring-2 focus:ring-senior-300;
+}
+
+.fin-card {
+  @apply bg-white rounded-lg shadow-sm border border-senior-100 p-4;
+}
+
+.fin-header {
+  @apply text-navy font-semibold tracking-tight;
+}
+
+.fin-label {
+  @apply text-xs uppercase tracking-wide text-navySoft;
+}
