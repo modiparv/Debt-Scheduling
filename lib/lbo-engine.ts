@@ -400,6 +400,71 @@ function sensitivityCase(inputs: DealInputs, multiple: number) {
   return { multiple, irr: out.sponsorIRR };
 }
 
+// ----- WACC computation -----
+// Replicates the LBO_Model_v2.xlsx WACC sheet:
+//   Cost of debt = SUM(amount × coupon) / total debt
+//   Post-tax cost of debt = pre-tax × (1 - taxRate)
+//   Cost of equity = riskFree + beta × MRP   (CAPM, beta is already re-levered)
+//   WACC = wDebt × postTaxKd + wEq × kEq + wPref × kPref
+
+export interface WaccResult {
+  preTaxKd: number;
+  postTaxKd: number;
+  costOfEquity: number;
+  costOfPreferred: number;
+  totalDebt: number;
+  totalEquity: number;
+  totalPreferred: number;
+  totalCapital: number;
+  computedWacc: number;
+  effectiveWacc: number;     // either computed or manual depending on useComputed
+}
+
+export function computeWacc(inputs: DealInputs): WaccResult {
+  const wacc = inputs.wacc;
+  const stack = inputs.stack.filter((t) => t.enabled);
+  const debtTranches = stack.filter((t) => t.id !== "preferred");
+  const pref = stack.find((t) => t.id === "preferred");
+
+  const totalDebt = debtTranches.reduce((s, t) => s + t.amount, 0);
+  const weightedCoupon = debtTranches.reduce((s, t) => s + t.amount * t.coupon, 0);
+  const preTaxKd = totalDebt > 0 ? weightedCoupon / totalDebt : 0;
+  const postTaxKd = preTaxKd * (1 - inputs.operating.taxRate);
+
+  const totalEquity = inputs.equity.sponsor + inputs.equity.mgmt + inputs.equity.newEquity;
+  const totalPreferred = pref?.amount ?? 0;
+  const costOfPreferred = pref?.coupon ?? 0;
+
+  const rf = wacc?.riskFreeRate ?? 0.05;
+  const mrp = wacc?.marketRiskPremium ?? 0.045;
+  const beta = wacc?.leveredBeta ?? 1.2;
+  const costOfEquity = rf + beta * mrp;
+
+  const totalCapital = totalDebt + totalEquity + totalPreferred;
+  const computedWacc =
+    totalCapital > 0
+      ? (totalDebt / totalCapital) * postTaxKd +
+        (totalEquity / totalCapital) * costOfEquity +
+        (totalPreferred / totalCapital) * costOfPreferred
+      : 0;
+
+  const effectiveWacc =
+    wacc && !wacc.useComputed ? wacc.manualWacc : computedWacc;
+
+  return {
+    preTaxKd,
+    postTaxKd,
+    costOfEquity,
+    costOfPreferred,
+    totalDebt,
+    totalEquity,
+    totalPreferred,
+    totalCapital,
+    computedWacc,
+    effectiveWacc,
+  };
+}
+
 // ----- 2D sensitivity grid -----
 // Multiple × exit year, with IRR in each cell. Used by the Sensitivity panel.
 

@@ -11,6 +11,7 @@ import { WaterfallPanel } from "./panels/WaterfallPanel";
 import { RollforwardPanel } from "./panels/RollforwardPanel";
 import { ReturnsPanel } from "./panels/ReturnsPanel";
 import { SensitivityPanel } from "./panels/SensitivityPanel";
+import { AssumptionsPanel } from "./panels/AssumptionsPanel";
 import { ShareExportBar } from "./ShareExport";
 import { StoryMode } from "./StoryMode";
 
@@ -58,17 +59,22 @@ export function Visualizer() {
             <RollforwardPanel />
           </section>
 
-          <SectionLabel index="④" title="Cash Waterfall" subtitle="The year-by-year mechanics. Drag the scrubber to walk through the hold." />
+          <SectionLabel index="④" title="Model Assumptions" subtitle="Every driver feeding the math, surfaced in one place. WACC, DCF inputs, capital stack details." />
+          <section className="min-h-[640px]">
+            <AssumptionsPanel />
+          </section>
+
+          <SectionLabel index="⑤" title="Cash Waterfall" subtitle="The year-by-year mechanics. Drag the scrubber to walk through the hold." />
           <section className="min-h-[800px]">
             <WaterfallPanel />
           </section>
 
-          <SectionLabel index="⑤" title="Sensitivity / Scenario Analysis" subtitle="Sponsor IRR across exit multiple × exit year. The current deal is outlined." />
+          <SectionLabel index="⑥" title="Sensitivity / Scenario Analysis" subtitle="Sponsor IRR across exit multiple × exit year. The current deal is outlined." />
           <section className="min-h-[420px]">
             <SensitivityPanel />
           </section>
 
-          <SectionLabel index="⑥" title="What just happened?" subtitle="Plain-English read on your last edit." />
+          <SectionLabel index="⑦" title="What just happened?" subtitle="Plain-English read on your last edit." />
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <Explainer />

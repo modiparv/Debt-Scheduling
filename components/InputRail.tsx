@@ -69,11 +69,11 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
 
       {tranche.enabled && (
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <Field label="Amount">
+          <Field label="Amount ($m)">
             <NumberInput
               value={tranche.amount}
               onChange={(n) => patch(tranche.id, { amount: n })}
-              step={5}
+              step={0.005}
               min={0}
             />
           </Field>
@@ -98,15 +98,27 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
             />
           </Field>
           {tranche.id !== "preferred" && tranche.id !== "revolver" && (
-            <Field label="Amort">
-              <NumberInput
-                value={tranche.amortPct * 100}
-                onChange={(n) => patch(tranche.id, { amortPct: n / 100 })}
-                step={1}
-                min={0}
-                max={100}
-                suffix="%"
-              />
+            <Field label="Mandatory amort %/yr">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={tranche.amortPct > 0}
+                  onChange={(e) =>
+                    patch(tranche.id, { amortPct: e.target.checked ? 0.10 : 0 })
+                  }
+                  className="accent-ink"
+                  title="Toggle scheduled amortization"
+                />
+                <NumberInput
+                  value={tranche.amortPct * 100}
+                  onChange={(n) => patch(tranche.id, { amortPct: n / 100 })}
+                  step={1}
+                  min={0}
+                  max={100}
+                  suffix="%"
+                  disabled={tranche.amortPct === 0}
+                />
+              </div>
             </Field>
           )}
           {(tranche.id === "mezz" || tranche.id === "sub_notes") && (
@@ -144,7 +156,7 @@ function TrancheCard({ tranche }: { tranche: Tranche }) {
               className="accent-ink"
             />
             <span className="text-[10px] uppercase tracking-wider2 text-mid">
-              Subject to cash sweep
+              Optional sweep (allows prepayment from excess cash)
             </span>
           </label>
         </div>
@@ -186,59 +198,66 @@ export function InputRail() {
 
       <Accordion title="Deal Setup">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Purchase price ($k)">
+          <Field label="Purchase price">
             <NumberInput
               value={inputs.purchasePrice}
               onChange={(n) => patchPurchase({ purchasePrice: n })}
               step={25}
               min={0}
+              suffix="$"
             />
           </Field>
-          <Field label="Fees ($k)">
+          <Field label="Fees">
             <NumberInput
               value={inputs.fees}
               onChange={(n) => patchPurchase({ fees: n })}
               step={5}
               min={0}
+              suffix="$"
             />
           </Field>
-          <Field label="Opening cash ($k)">
+          <Field label="Opening cash">
             <NumberInput
               value={inputs.startingCash}
               onChange={(n) => patchPurchase({ startingCash: n })}
               step={5}
               min={0}
+              suffix="$"
             />
           </Field>
-          <Field label="Revolver limit ($k)">
+          <Field label="Revolver limit">
             <NumberInput
               value={inputs.revolverLimit ?? 0}
               onChange={(n) => patchPurchase({ revolverLimit: n })}
               step={50}
               min={0}
+              suffix="$"
             />
           </Field>
-          <Field label="NOL balance ($k)">
+          <Field label="NOL balance">
             <NumberInput
               value={inputs.nolBalance ?? 0}
               onChange={(n) => patchPurchase({ nolBalance: n })}
               step={5}
               min={0}
+              suffix="$"
             />
           </Field>
         </div>
+        <p className="text-[10px] text-mid mt-1">All monetary values are in USD millions ($m). Enter <strong>0.95</strong> for $0.95m / $950k.</p>
         <div className="pt-3 mt-3 border-t border-silver/70">
           <div className="fin-eyebrow mb-3">Dividend recap (paid to common equity)</div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Common div Y1 ($k)">
+            <Field label="Common div Y1">
               <NumberInput
                 value={inputs.dividends?.commonDivY1 ?? 0}
                 onChange={(n) => patchDividends({ commonDivY1: n })}
-                step={0.5}
+                step={0.001}
                 min={0}
+                suffix="$"
               />
             </Field>
-            <Field label="Annual growth (%)">
+            <Field label="Annual growth">
               <NumberInput
                 value={(inputs.dividends?.commonDivGrowth ?? 0) * 100}
                 onChange={(n) => patchDividends({ commonDivGrowth: n / 100 })}
@@ -307,11 +326,11 @@ export function InputRail() {
           step={0.005}
           format={fmtPct}
         />
-        <Field label="Starting revenue">
+        <Field label="Starting revenue ($m)">
           <NumberInput
             value={inputs.operating.revenueY1}
             onChange={(n) => patchOperating({ revenueY1: n })}
-            step={50}
+            step={0.05}
             min={0}
           />
         </Field>
@@ -326,27 +345,27 @@ export function InputRail() {
         <div className="pt-3 space-y-3 border-t border-silver/70 mt-3">
           <div className="fin-eyebrow">Equity</div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Sponsor">
+            <Field label="Sponsor ($m)">
               <NumberInput
                 value={inputs.equity.sponsor}
                 onChange={(n) => patchEquity({ sponsor: n })}
-                step={10}
+                step={0.01}
                 min={0}
               />
             </Field>
-            <Field label="Management">
+            <Field label="Management ($m)">
               <NumberInput
                 value={inputs.equity.mgmt}
                 onChange={(n) => patchEquity({ mgmt: n })}
-                step={5}
+                step={0.005}
                 min={0}
               />
             </Field>
-            <Field label="New equity">
+            <Field label="New equity ($m)">
               <NumberInput
                 value={inputs.equity.newEquity}
                 onChange={(n) => patchEquity({ newEquity: n })}
-                step={5}
+                step={0.005}
                 min={0}
               />
             </Field>
@@ -392,11 +411,11 @@ export function InputRail() {
           step={0.05}
           format={fmtPct}
         />
-        <Field label="Minimum cash">
+        <Field label="Minimum cash ($m)">
           <NumberInput
             value={inputs.exit.minCash}
             onChange={(n) => patchExit({ minCash: n })}
-            step={5}
+            step={0.01}
             min={0}
           />
         </Field>

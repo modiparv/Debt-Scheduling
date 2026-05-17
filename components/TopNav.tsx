@@ -8,6 +8,9 @@ export function TopNav({ active }: { active?: "home" | "learn" | "visualizer" })
           <span className="font-serif text-lg text-ink tracking-tightish">
             LBO Debt Visualizer
           </span>
+          <span className="text-[10px] uppercase tracking-wider2 text-mid">
+            by Parv Modi
+          </span>
         </Link>
 
         <nav className="flex items-center gap-1">

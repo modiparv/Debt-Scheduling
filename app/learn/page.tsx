@@ -155,7 +155,7 @@ export default function LearnPage() {
       </main>
 
       <footer className="border-t border-silver px-8 py-6 text-[11px] text-mid text-center tracking-tight">
-        Built as an educational tool. Numbers are illustrative, not investment advice.
+        Created by Parv Modi. Numbers are illustrative, not investment advice.
       </footer>
     </div>
   );

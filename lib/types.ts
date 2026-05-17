@@ -61,6 +61,16 @@ export interface DividendInputs {
   otherDivPerYear: number; // additional flat dividend (e.g. preferred-like)
 }
 
+export interface WaccInputs {
+  riskFreeRate: number;       // CAPM Rf
+  marketRiskPremium: number;  // CAPM (Rm - Rf)
+  leveredBeta: number;        // β re-levered to post-deal structure
+  manualWacc: number;         // manual WACC override
+  useComputed: boolean;       // true → use CAPM-computed WACC, false → manualWacc
+  perpetuityGrowth: number;   // terminal value perpetuity growth rate
+  terminalMultiple: number;   // exit EBITDA multiple for DCF terminal
+}
+
 export interface DealInputs {
   purchasePrice: number;
   fees: number;
@@ -72,6 +82,7 @@ export interface DealInputs {
   equity: EquityInputs;
   exit: ExitInputs;
   dividends?: DividendInputs;
+  wacc?: WaccInputs;
 }
 
 export interface YearRow {
