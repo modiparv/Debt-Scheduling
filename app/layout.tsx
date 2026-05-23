@@ -18,8 +18,11 @@ const serif = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "LBO Debt Visualizer",
-  description: "Interactive LBO debt scheduling and capital structure visualizer",
+  title: "LBO Debt Visualizer · by Parv Modi",
+  description:
+    "Interactive LBO debt scheduling and capital structure visualizer. An educational tool by Parv Modi, modeled on a 10-sheet reference workbook.",
+  authors: [{ name: "Parv Modi" }],
+  creator: "Parv Modi",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

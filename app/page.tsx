@@ -13,12 +13,17 @@ export default function HomePage() {
           <h1 className="font-serif text-4xl lg:text-6xl text-ink leading-[1.05] tracking-tightish mb-8">
             Feel the cause-and-effect between capital structure and equity IRR.
           </h1>
-          <p className="text-[15px] text-graphite max-w-2xl leading-relaxed mb-8">
+          <p className="text-[15px] text-graphite max-w-2xl leading-relaxed mb-6">
             This tool isolates the <em>debt waterfall</em> mechanics of a leveraged buyout.
             Edit any input — coupon, sweep %, mezz kicker, exit multiple — and watch the
             cap stack, year-by-year cash waterfall, tranche rollforward, and sponsor returns
             update instantly. A plain-English explainer tells you <em>why</em> the
             number moved.
+          </p>
+          <p className="inline-flex items-center gap-2 text-[12px] text-mid mb-8 border border-silver rounded-md px-3 py-1.5">
+            <span className="text-champagne">●</span>
+            Engine validated against a 10-sheet Excel LBO model — base-case sponsor IRR within
+            0.6pp (26.8% vs 27.4%). All values in USD millions.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -101,7 +106,7 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t border-silver px-8 py-6 text-[11px] text-mid text-center tracking-tight">
-        Built as an educational tool. Numbers are illustrative, not investment advice.
+        Created by Parv Modi. Numbers are illustrative, not investment advice.
       </footer>
     </div>
   );

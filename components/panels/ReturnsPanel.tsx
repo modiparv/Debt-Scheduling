@@ -41,10 +41,20 @@ function Metric({
 export function ReturnsPanel() {
   const outputs = useDealStore((s) => s.outputs);
 
+  // Shorter labels to prevent wrapping in the y-axis.
+  const shortLabel = (l: string) => {
+    if (l === "Mgmt Performance Pool") return "Mgmt Pool";
+    if (l === "Sub Notes Kicker") return "Sub Kicker";
+    if (l === "Mezz Kicker") return "Mezz Kicker";
+    if (l === "Preferred Kicker") return "Pref Kicker";
+    if (l === "New Equity") return "New Eq.";
+    return l;
+  };
   const allocData = outputs.holders
     .filter((h) => h.exitValue > 0.01)
     .map((h) => ({
-      name: h.label,
+      name: shortLabel(h.label),
+      fullName: h.label,
       value: h.exitValue,
       pct: h.sharePct,
       invested: h.invested,
@@ -79,7 +89,7 @@ export function ReturnsPanel() {
               <BarChart
                 data={allocData}
                 layout="vertical"
-                margin={{ left: 80, right: 12, top: 2, bottom: 2 }}
+                margin={{ left: 100, right: 12, top: 2, bottom: 2 }}
               >
                 <XAxis type="number" hide />
                 <YAxis
@@ -88,7 +98,8 @@ export function ReturnsPanel() {
                   tick={{ fontSize: 10, fill: "#757575" }}
                   axisLine={false}
                   tickLine={false}
-                  width={80}
+                  width={100}
+                  interval={0}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(0,0,0,0.04)" }}
@@ -98,7 +109,7 @@ export function ReturnsPanel() {
                     borderRadius: 6,
                     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
                   }}
-                  formatter={(v: any, _n, p) => [
+                  formatter={(v: any, _n: any, p: any) => [
                     `${fmtMoney(Number(v))} · ${fmtPct((p.payload as any).pct)}`,
                     (p.payload as any).name,
                   ]}

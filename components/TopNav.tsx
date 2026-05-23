@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 
 export function TopNav({ active }: { active?: "home" | "learn" | "visualizer" }) {
   return (
@@ -8,6 +7,9 @@ export function TopNav({ active }: { active?: "home" | "learn" | "visualizer" })
         <Link href="/" className="flex items-baseline gap-3">
           <span className="font-serif text-lg text-ink tracking-tightish">
             LBO Debt Visualizer
+          </span>
+          <span className="text-[10px] uppercase tracking-wider2 text-mid">
+            by Parv Modi
           </span>
         </Link>
 

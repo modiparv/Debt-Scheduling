@@ -10,6 +10,8 @@ import { CapitalStackPanel } from "./panels/CapitalStackPanel";
 import { WaterfallPanel } from "./panels/WaterfallPanel";
 import { RollforwardPanel } from "./panels/RollforwardPanel";
 import { ReturnsPanel } from "./panels/ReturnsPanel";
+import { SensitivityPanel } from "./panels/SensitivityPanel";
+import { AssumptionsPanel } from "./panels/AssumptionsPanel";
 import { ShareExportBar } from "./ShareExport";
 import { StoryMode } from "./StoryMode";
 
@@ -25,6 +27,18 @@ export function Visualizer() {
 
         <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8 overflow-x-hidden space-y-6 max-w-[1400px] mx-auto w-full">
           {storyOpen && <StoryMode onExit={() => setStoryOpen(false)} />}
+
+          {/* Currency + attribution banner */}
+          <div className="flex flex-wrap items-center justify-between gap-2 no-print">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-ink text-white text-[10px] uppercase tracking-wider2 font-medium">
+                <span className="text-champagne">●</span> All values in USD millions ($m)
+              </span>
+            </div>
+            <span className="text-[11px] text-mid">
+              by <span className="text-ink font-medium">Parv Modi</span>
+            </span>
+          </div>
 
           {/* Compact action bar — single row on desktop */}
           <header className="flex flex-wrap items-center justify-between gap-3 no-print">
@@ -57,12 +71,22 @@ export function Visualizer() {
             <RollforwardPanel />
           </section>
 
-          <SectionLabel index="④" title="Cash Waterfall" subtitle="The year-by-year mechanics. Drag the scrubber to walk through the hold." />
-          <section className="min-h-[720px]">
+          <SectionLabel index="④" title="Model Assumptions" subtitle="Every driver feeding the math, surfaced in one place. WACC, DCF inputs, capital stack details." />
+          <section className="min-h-[640px]">
+            <AssumptionsPanel />
+          </section>
+
+          <SectionLabel index="⑤" title="Cash Waterfall" subtitle="The year-by-year mechanics. Drag the scrubber to walk through the hold." />
+          <section className="min-h-[800px]">
             <WaterfallPanel />
           </section>
 
-          <SectionLabel index="⑤" title="What just happened?" subtitle="Plain-English read on your last edit." />
+          <SectionLabel index="⑥" title="Sensitivity / Scenario Analysis" subtitle="Sponsor IRR across exit multiple × exit year. The current deal is outlined." />
+          <section className="min-h-[420px]">
+            <SensitivityPanel />
+          </section>
+
+          <SectionLabel index="⑦" title="What just happened?" subtitle="Plain-English read on your last edit." />
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <Explainer />

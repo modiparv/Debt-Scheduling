@@ -134,9 +134,9 @@ export default function LearnPage() {
           </p>
           <p>
             The COVID Stress preset shows the textbook case — same deal, same
-            structure, but Y1–Y2 revenue declines. The sponsor IRR collapses
-            from 35% to 13%, and you can watch the revolver get pulled in the
-            waterfall.
+            structure, but with declining revenue and margin compression. The
+            sponsor IRR collapses from ~27% to under 10%, and you can watch the
+            revolver get pulled in the waterfall to fund the cash shortfall.
           </p>
         </Section>
 
@@ -155,7 +155,7 @@ export default function LearnPage() {
       </main>
 
       <footer className="border-t border-silver px-8 py-6 text-[11px] text-mid text-center tracking-tight">
-        Built as an educational tool. Numbers are illustrative, not investment advice.
+        Created by Parv Modi. Numbers are illustrative, not investment advice.
       </footer>
     </div>
   );

@@ -63,7 +63,7 @@ export function RollforwardPanel() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#757575" }}
-              tickFormatter={(v) => `$${v.toFixed(0)}`}
+              tickFormatter={(v: number) => `$${v.toFixed(0)}`}
             />
             <YAxis
               yAxisId="right"
@@ -73,7 +73,7 @@ export function RollforwardPanel() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#757575" }}
-              tickFormatter={(v) => `${v.toFixed(1)}x`}
+              tickFormatter={(v: number) => `${v.toFixed(1)}x`}
             />
             <Tooltip
               cursor={{ stroke: "#E0E0E0" }}
