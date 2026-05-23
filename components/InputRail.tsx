@@ -175,86 +175,107 @@ export function InputRail() {
   const patchDividends = useDealStore((s) => s.patchDividends);
 
   const gap = outputs.gap;
-  const balanced = Math.abs(gap) < 1;
+  const balanced = Math.abs(gap) < 0.001;
 
   return (
     <aside className="w-full lg:w-[380px] lg:max-w-[380px] shrink-0 bg-white border-r border-silver overflow-y-auto no-print">
       <div className="px-5 py-5 border-b border-silver bg-white">
-        <div className="fin-eyebrow mb-2">Sources / Uses</div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-[13px] font-mono tabular-nums text-ink">
-            {fmtMoney(outputs.sourcesTotal)} / {fmtMoney(outputs.usesTotal)}
-          </span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="fin-eyebrow">Sources &amp; Uses · USD $m</div>
           <span
             className={classNames(
-              "text-[11px] font-mono tabular-nums tracking-tight",
-              balanced ? "text-ink" : "text-junior-700"
+              "text-[10px] uppercase tracking-wider2 px-2 py-0.5 rounded",
+              balanced
+                ? "bg-equity-50 text-equity-700 border border-equity-100"
+                : "bg-junior-50 text-junior-700 border border-junior-100"
             )}
           >
-            {balanced ? "Balanced" : `Gap ${fmtMoney(gap)}`}
+            {balanced ? "✓ Balanced" : `Gap ${fmtMoney(gap)}`}
           </span>
         </div>
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-baseline text-[12px]">
+            <span className="text-mid">Sources <span className="text-[10px]">(debt + equity)</span></span>
+            <span className="font-mono tabular-nums text-ink">{fmtMoney(outputs.sourcesTotal)}</span>
+          </div>
+          <div className="flex justify-between items-baseline text-[12px]">
+            <span className="text-mid">Uses <span className="text-[10px]">(price + fees)</span></span>
+            <span className="font-mono tabular-nums text-ink">{fmtMoney(outputs.usesTotal)}</span>
+          </div>
+        </div>
+        {!balanced && (
+          <p className="text-[10px] text-junior-700 mt-2">
+            Sources must equal Uses. Adjust debt tranches or equity until the gap is zero.
+          </p>
+        )}
       </div>
 
       <Accordion title="Deal Setup">
+        <p className="text-[11px] text-mid mb-2">
+          The price you pay and how it&rsquo;s funded. All values in USD millions —
+          enter <strong>0.95</strong> for $0.95m.
+        </p>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Purchase price">
             <NumberInput
               value={inputs.purchasePrice}
               onChange={(n) => patchPurchase({ purchasePrice: n })}
-              step={25}
+              step={0.05}
               min={0}
-              suffix="$"
+              prefix="$"
             />
           </Field>
           <Field label="Fees">
             <NumberInput
               value={inputs.fees}
               onChange={(n) => patchPurchase({ fees: n })}
-              step={5}
+              step={0.005}
               min={0}
-              suffix="$"
+              prefix="$"
             />
           </Field>
           <Field label="Opening cash">
             <NumberInput
               value={inputs.startingCash}
               onChange={(n) => patchPurchase({ startingCash: n })}
-              step={5}
+              step={0.005}
               min={0}
-              suffix="$"
+              prefix="$"
             />
           </Field>
           <Field label="Revolver limit">
             <NumberInput
               value={inputs.revolverLimit ?? 0}
               onChange={(n) => patchPurchase({ revolverLimit: n })}
-              step={50}
+              step={0.05}
               min={0}
-              suffix="$"
+              prefix="$"
             />
           </Field>
           <Field label="NOL balance">
             <NumberInput
               value={inputs.nolBalance ?? 0}
               onChange={(n) => patchPurchase({ nolBalance: n })}
-              step={5}
+              step={0.005}
               min={0}
-              suffix="$"
+              prefix="$"
             />
           </Field>
         </div>
-        <p className="text-[10px] text-mid mt-1">All monetary values are in USD millions ($m). Enter <strong>0.95</strong> for $0.95m / $950k.</p>
         <div className="pt-3 mt-3 border-t border-silver/70">
-          <div className="fin-eyebrow mb-3">Dividend recap (paid to common equity)</div>
+          <div className="fin-eyebrow mb-1">Dividend recap</div>
+          <p className="text-[11px] text-mid mb-3">
+            Cash paid out to equity holders each year (sponsor, mgmt, new equity).
+            This is what makes the IRR work mid-hold.
+          </p>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Common div Y1">
+            <Field label="Year 1 dividend">
               <NumberInput
                 value={inputs.dividends?.commonDivY1 ?? 0}
                 onChange={(n) => patchDividends({ commonDivY1: n })}
                 step={0.001}
                 min={0}
-                suffix="$"
+                prefix="$"
               />
             </Field>
             <Field label="Annual growth">
@@ -272,6 +293,10 @@ export function InputRail() {
       </Accordion>
 
       <Accordion title="Operating Drivers">
+        <p className="text-[11px] text-mid mb-3">
+          How the business performs. These drive EBITDA and the cash available
+          to pay down debt each year.
+        </p>
         <Slider
           label="Revenue growth"
           value={inputs.operating.revenueGrowth}
@@ -337,6 +362,11 @@ export function InputRail() {
       </Accordion>
 
       <Accordion title="Capital Stack">
+        <p className="text-[11px] text-mid mb-3">
+          How the deal is financed, senior (top) to junior. Tick a tranche to
+          include it. <strong>Mandatory amort</strong> = forced repayment each
+          year; <strong>sweep</strong> = optional prepayment from spare cash.
+        </p>
         <div className="space-y-2">
           {inputs.stack.map((t) => (
             <TrancheCard key={t.id} tranche={t} />
@@ -384,6 +414,10 @@ export function InputRail() {
       </Accordion>
 
       <Accordion title="Exit Assumptions">
+        <p className="text-[11px] text-mid mb-3">
+          When and at what multiple the sponsor sells. Exit multiple is usually
+          the single biggest driver of IRR.
+        </p>
         <Slider
           label="Exit year"
           value={inputs.exit.exitYear}

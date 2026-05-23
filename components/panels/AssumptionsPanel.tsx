@@ -75,7 +75,8 @@ export function AssumptionsPanel() {
           <Row label="Manual WACC override" value={fmtPct(inputs.wacc?.manualWacc ?? 0.085)} />
           <Row
             label="Effective WACC (in use)"
-            value={`${fmtPct(wacc.effectiveWacc)} · ${inputs.wacc?.useComputed ? "computed" : "manual"}`}
+            value={fmtPct(wacc.effectiveWacc)}
+            tag={inputs.wacc?.useComputed ? "computed" : "manual"}
             strong
           />
           <Row label="Terminal multiple (DCF)" value={fmtMult(inputs.wacc?.terminalMultiple ?? 6)} />
@@ -134,17 +135,36 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function Row({ label, value, accent, strong }: { label: string; value: string; accent?: boolean; strong?: boolean }) {
+function Row({
+  label,
+  value,
+  accent,
+  strong,
+  tag,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+  strong?: boolean;
+  tag?: string;
+}) {
   return (
-    <div className="flex justify-between items-baseline py-1 text-[12px]">
+    <div className="flex justify-between items-center gap-2 py-1 text-[12px]">
       <span className={classNames("text-mid", strong && "text-ink font-medium")}>{label}</span>
-      <span
-        className={classNames(
-          "font-mono tabular-nums",
-          strong ? "text-ink font-semibold" : accent ? "text-champagneDeep" : "text-ink"
+      <span className="flex items-center gap-2 shrink-0">
+        {tag && (
+          <span className="text-[9px] uppercase tracking-wider2 text-mid border border-silver rounded px-1.5 py-0.5">
+            {tag}
+          </span>
         )}
-      >
-        {value}
+        <span
+          className={classNames(
+            "font-mono tabular-nums whitespace-nowrap",
+            strong ? "text-ink font-semibold" : accent ? "text-champagneDeep" : "text-ink"
+          )}
+        >
+          {value}
+        </span>
       </span>
     </div>
   );
