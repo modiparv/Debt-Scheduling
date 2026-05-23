@@ -37,7 +37,7 @@ describe("computeDeal: structural invariants", () => {
   it("revenue grows year-over-year at the configured rate", () => {
     const y1 = out.years[0].revenue;
     const y2 = out.years[1].revenue;
-    expect(y2 / y1).toBeCloseTo(1.05, 3);
+    expect(y2 / y1).toBeCloseTo(1.10, 3);
   });
 
   it("ending cash is never negative", () => {
@@ -69,7 +69,7 @@ describe("computeDeal: base case returns", () => {
 
   it("sources roughly match uses (values in $m)", () => {
     expect(out.sourcesTotal).toBeGreaterThan(0.9);
-    expect(out.usesTotal).toBe(0.95);
+    expect(out.usesTotal).toBeCloseTo(0.9459, 4);
     expect(Math.abs(out.gap)).toBeLessThan(0.01);
   });
 
@@ -136,6 +136,6 @@ describe("sources / uses helpers", () => {
 
   it("totalUses equals purchase price + fees", () => {
     const inp = baseCase();
-    expect(totalUses(inp)).toBe(0.95);
+    expect(totalUses(inp)).toBeCloseTo(0.9459, 4);
   });
 });

@@ -39,7 +39,7 @@ export function baseCase(): DealInputs {
   stack = setTranche(stack, "preferred", { amount: 0.060 });
 
   return {
-    purchasePrice: 0.950,
+    purchasePrice: 0.9459,
     fees: 0,
     startingCash: 0.055,
     revolverLimit: 0.600,

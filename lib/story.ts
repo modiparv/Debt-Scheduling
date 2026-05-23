@@ -17,6 +17,7 @@ function allCashDeal(): DealInputs {
   const stack = base.stack.map((t) => ({ ...t, enabled: false, amount: 0 }));
   return {
     ...base,
+    purchasePrice: 0.95,
     stack,
     equity: { sponsor: 0.95, mgmt: 0, newEquity: 0, mgmtPool: 0 },
     exit: { ...base.exit, sweepPct: 0 },
@@ -31,6 +32,7 @@ function modestLeverage(): DealInputs {
   );
   return {
     ...base,
+    purchasePrice: 0.95,
     stack,
     equity: { sponsor: 0.60, mgmt: 0.05, newEquity: 0, mgmtPool: 0 },
   };
@@ -49,6 +51,7 @@ function aggressiveLeverage(): DealInputs {
   });
   return {
     ...base,
+    purchasePrice: 0.95,
     stack,
     equity: { sponsor: 0.20, mgmt: 0.04, newEquity: 0.01, mgmtPool: 0.02 },
   };
