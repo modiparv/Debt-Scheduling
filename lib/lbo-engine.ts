@@ -172,7 +172,10 @@ export function computeDeal(
       if (t.amortPct > 0 && t.id !== "revolver" && t.id !== "preferred") {
         mand = Math.min(originalAmount[t.id] * t.amortPct, balance[t.id]);
       }
-      if (y === t.maturity) {
+      // Bullet repayment at maturity — but NOT for the revolver: it is a
+      // revolving facility (the residual cash plug), repaid only through the
+      // optional sweep, never force-bulleted on its commitment-expiry year.
+      if (y === t.maturity && t.id !== "revolver") {
         mand = balance[t.id];
       }
       if (t.id === "preferred" && y === t.maturity) {
