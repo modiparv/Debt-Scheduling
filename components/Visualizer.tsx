@@ -28,6 +28,18 @@ export function Visualizer() {
         <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8 overflow-x-hidden space-y-6 max-w-[1400px] mx-auto w-full">
           {storyOpen && <StoryMode onExit={() => setStoryOpen(false)} />}
 
+          {/* Currency + attribution banner */}
+          <div className="flex flex-wrap items-center justify-between gap-2 no-print">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-ink text-white text-[10px] uppercase tracking-wider2 font-medium">
+                <span className="text-champagne">●</span> All values in USD millions ($m)
+              </span>
+            </div>
+            <span className="text-[11px] text-mid">
+              by <span className="text-ink font-medium">Parv Modi</span>
+            </span>
+          </div>
+
           {/* Compact action bar — single row on desktop */}
           <header className="flex flex-wrap items-center justify-between gap-3 no-print">
             <div className="flex items-center gap-2 flex-wrap">
