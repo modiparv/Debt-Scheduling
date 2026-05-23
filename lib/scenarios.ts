@@ -50,9 +50,9 @@ export function baseCase(): DealInputs {
       ebitdaMargin: 0.29,
       marginTrajectory: -0.009,
       capexPct: 0.10,
-      nwcPct: 0.05,
+      nwcPct: 0.29,
       taxRate: 0.35,
-      daPct: 0.05,
+      daPct: 0.066,
     },
     stack,
     equity: { sponsor: 0.220, mgmt: 0.040, newEquity: 0.025, mgmtPool: 0.04, newEquityKicker: 0.02 },
@@ -99,7 +99,9 @@ export function aggressive2007(): DealInputs {
 
 export function covidStress(): DealInputs {
   const base = baseCase();
-  return { ...base, operating: { ...base.operating, revenueGrowth: -0.05, marginTrajectory: -0.012, ebitdaMargin: 0.22 } };
+  // A bad-but-survivable downturn: flat-to-declining revenue and margin
+  // compression, enough to crush returns without a total wipeout.
+  return { ...base, operating: { ...base.operating, revenueGrowth: -0.02, marginTrajectory: -0.005, ebitdaMargin: 0.25 } };
 }
 
 export function sweepOff(): DealInputs {

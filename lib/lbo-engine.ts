@@ -9,7 +9,6 @@ import type {
 } from "./types";
 
 const CASCADE_ORDER: TrancheId[] = [
-  "revolver",
   "existing",
   "tla",
   "tlb",
@@ -17,6 +16,7 @@ const CASCADE_ORDER: TrancheId[] = [
   "sub_notes",
   "mezz",
   "seller",
+  "revolver",
 ];
 
 const ALL_IDS: TrancheId[] = [
@@ -123,7 +123,10 @@ export function computeDeal(
     }
 
     // --- Taxes with NOL carryforward ---
-    const ebt = ebit - cashInterest;
+    // PIK interest is non-cash but still tax-deductible (it appears in the
+    // interest-expense line of the reference Income Statement), so deduct
+    // both cash and PIK interest from taxable income.
+    const ebt = ebit - cashInterest - pikInterest;
     let taxes = 0;
     if (ebt > 0) {
       const taxableIncome = Math.max(0, ebt - nol);
@@ -138,7 +141,11 @@ export function computeDeal(
 
     // --- Cash flow ---
     const capex = revenue * op.capexPct;
-    const revenueDelta = y === 1 ? 0 : revenue - prevRevenue;
+    // Net working capital scales with revenue. Year 1 carries the full
+    // initial build (establishing the AR / inventory / prepaid base); later
+    // years only fund the incremental growth. This mirrors the granular NWC
+    // schedule in the reference workbook (AR 18% of rev, inventory, etc.).
+    const revenueDelta = y === 1 ? revenue : revenue - prevRevenue;
     const nwcChange = op.nwcPct * revenueDelta;
 
     const cfo = netIncome + da + pikInterest - nwcChange;
@@ -202,6 +209,9 @@ export function computeDeal(
         if (remaining <= 0) break;
         const t = trancheById.get(id);
         if (!t || !t.prepayable) continue;
+        // A tranche cannot be optionally prepaid while it is still in its
+        // PIK period — interest is accreting, the note is not yet callable.
+        if (y <= t.pikYears) continue;
         if (balance[id] <= 0) continue;
         const pay = Math.min(remaining, balance[id]);
         balance[id] -= pay;

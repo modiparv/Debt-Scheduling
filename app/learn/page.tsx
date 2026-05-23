@@ -134,9 +134,9 @@ export default function LearnPage() {
           </p>
           <p>
             The COVID Stress preset shows the textbook case — same deal, same
-            structure, but Y1–Y2 revenue declines. The sponsor IRR collapses
-            from 35% to 13%, and you can watch the revolver get pulled in the
-            waterfall.
+            structure, but with declining revenue and margin compression. The
+            sponsor IRR collapses from ~27% to under 10%, and you can watch the
+            revolver get pulled in the waterfall to fund the cash shortfall.
           </p>
         </Section>
 

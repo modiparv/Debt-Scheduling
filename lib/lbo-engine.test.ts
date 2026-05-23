@@ -67,20 +67,29 @@ describe("computeDeal: structural invariants", () => {
 describe("computeDeal: base case returns", () => {
   const out = computeDeal(baseCase());
 
-  it("sources roughly match uses", () => {
-    expect(out.sourcesTotal).toBeGreaterThan(900);
-    expect(out.usesTotal).toBe(950);
-    expect(Math.abs(out.gap)).toBeLessThan(10);
+  it("sources roughly match uses (values in $m)", () => {
+    expect(out.sourcesTotal).toBeGreaterThan(0.9);
+    expect(out.usesTotal).toBe(0.95);
+    expect(Math.abs(out.gap)).toBeLessThan(0.01);
   });
 
-  it("equity value at exit lands in the expected range (~$2.5M-$4.5M)", () => {
-    expect(out.exit.equityValue).toBeGreaterThan(2500);
-    expect(out.exit.equityValue).toBeLessThan(4500);
+  it("equity value at exit matches the Excel reference (~$2.85-3.0m)", () => {
+    expect(out.exit.equityValue).toBeGreaterThan(2.5);
+    expect(out.exit.equityValue).toBeLessThan(3.2);
   });
 
-  it("sponsor IRR is in a healthy LBO range (15-40%)", () => {
-    expect(out.sponsorIRR).toBeGreaterThan(0.15);
-    expect(out.sponsorIRR).toBeLessThan(0.40);
+  it("sponsor IRR matches the Excel reference (~27%)", () => {
+    expect(out.sponsorIRR).toBeGreaterThan(0.24);
+    expect(out.sponsorIRR).toBeLessThan(0.30);
+  });
+
+  it("exit EBITDA and EV match the Excel reference", () => {
+    expect(out.exit.exitEbitda).toBeCloseTo(0.514, 2);
+    expect(out.exit.enterpriseValue).toBeCloseTo(3.084, 2);
+  });
+
+  it("cash at exit pins to the minimum (revolver absorbs the excess)", () => {
+    expect(out.exit.cashAtExit).toBeCloseTo(0.05, 2);
   });
 
   it("sponsor MOIC is above 2.5x", () => {
@@ -117,16 +126,16 @@ describe("computeDeal: comparative scenarios", () => {
 });
 
 describe("sources / uses helpers", () => {
-  it("totalSources sums all enabled tranches plus equity", () => {
+  it("totalSources sums all enabled tranches plus equity (in $m)", () => {
     const inp = baseCase();
     const s = totalSources(inp);
-    // tranches: 65+200.9+80+55+65+40+70+25+60 = 660.9
-    // equity:   220+40+25 = 285
-    expect(s).toBeCloseTo(660.9 + 285, 5);
+    // tranches: 0.065+0.2009+0.080+0.055+0.065+0.040+0.070+0.025+0.060 = 0.6609
+    // equity:   0.220+0.040+0.025 = 0.285
+    expect(s).toBeCloseTo(0.6609 + 0.285, 5);
   });
 
   it("totalUses equals purchase price + fees", () => {
     const inp = baseCase();
-    expect(totalUses(inp)).toBe(950);
+    expect(totalUses(inp)).toBe(0.95);
   });
 });
