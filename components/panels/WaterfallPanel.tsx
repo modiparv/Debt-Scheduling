@@ -176,11 +176,17 @@ export function WaterfallPanel() {
 
   // ⑤ Sweep
   const sweepChips: FlowItem[] = [];
+  let sweepApplied = 0;
   for (const t of inputs.stack) {
     if (!t.enabled) continue;
     const o = row.trancheOptional[t.id];
     if (o > 0.01) sweepChips.push({ label: NICE_LABELS[t.id], amount: o, color: t.color });
+    sweepApplied += o;
   }
+  // The pool earmarked for sweep can exceed the debt actually available to
+  // prepay; the unapplied remainder falls back to cash. Show what truly paid
+  // down debt so the step's headline total matches its tranche breakdown.
+  const sweepReturned = row.sweepPool - sweepApplied;
 
   return (
     <div className="fin-card h-full flex flex-col overflow-hidden">
@@ -287,13 +293,17 @@ export function WaterfallPanel() {
         <Step
           index="⑤"
           title={`Optional sweep · ${fmtPct(inputs.exit.sweepPct)} of excess`}
-          total={-row.sweepPool}
+          total={-sweepApplied}
           totalTone="negative"
           bar={<StepBar items={sweepChips} />}
           chips={sweepChips}
           note={
-            row.sweepPool > 0
-              ? "Excess cash pays down debt in seniority order."
+            sweepApplied > 0.01
+              ? sweepReturned > 0.01
+                ? `Excess cash pays down debt in seniority order. ${fmtMoney(sweepReturned)} had no eligible debt left to prepay and stayed as cash.`
+                : "Excess cash pays down debt in seniority order."
+              : row.sweepPool > 0.01
+              ? `No eligible debt left to prepay — the full ${fmtMoney(row.sweepPool)} stayed as cash.`
               : "No sweep — either sweep % is 0 or there was no excess cash."
           }
         />
