@@ -200,6 +200,15 @@ export function CapitalStackPanel() {
   const y0Layers = buildLayers(inputs.stack, y0Balances, y0Equity);
   const y0Total = y0Layers.reduce((s, l) => s + l.amount, 0);
 
+  // Leverage at close = drawn debt at funding ÷ entry (year-1) EBITDA. Use the
+  // funding balances directly rather than year-1-end balances, which already
+  // reflect a year of amortization and sweep.
+  const closeDebt = (Object.keys(y0Balances) as TrancheId[])
+    .filter((id) => id !== "preferred")
+    .reduce((s, id) => s + y0Balances[id], 0);
+  const entryEbitda = outputs.years[0]?.ebitda ?? 0;
+  const closeLeverage = entryEbitda > 0 ? closeDebt / entryEbitda : 0;
+
   const exitRow = outputs.years.at(-1);
   const exitLayers = buildLayers(
     inputs.stack,
@@ -242,7 +251,7 @@ export function CapitalStackPanel() {
         <span className="fin-eyebrow">close → exit</span>
       </div>
       <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
-        <StackBar title="At Close" subtitle={`Year 0 · ${fmtNum(outputs.years[0]?.leverageRatio ?? 0, 2)}x leverage`} layers={y0Layers} total={y0Total} onHover={onHover} />
+        <StackBar title="At Close" subtitle={`Year 0 · ${fmtNum(closeLeverage, 2)}x leverage`} layers={y0Layers} total={y0Total} onHover={onHover} />
         <StackBar
           title="At Exit"
           subtitle={`Year ${outputs.exit.year} · ${fmtNum(exitRow?.leverageRatio ?? 0, 2)}x leverage · ${fmtMult(inputs.exit.exitMultiple)} multiple`}

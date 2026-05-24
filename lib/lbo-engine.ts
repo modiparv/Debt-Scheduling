@@ -370,8 +370,11 @@ function allocateEquity(
     const exitValue = Math.max(0, equityValue) * sharePct;
     const series = [...cfs];
     series[exitYear] += exitValue;
-    const irr = invested > 0 ? solveIrr(series) : NaN;
     const totalIn = series.reduce((s, c) => s + (c > 0 ? c : 0), 0);
+    // A fully wiped-out holder (zero proceeds across the whole hold) has a
+    // -100% IRR, not an undefined one — the solver returns NaN when the stream
+    // has no positive cash flow, so handle that case explicitly.
+    const irr = invested > 0 ? (totalIn <= 0 ? -1 : solveIrr(series)) : NaN;
     const moic = invested > 0 ? totalIn / invested : NaN;
     return { id, label, invested, sharePct, exitValue, irr, moic };
   };

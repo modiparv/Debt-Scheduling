@@ -77,7 +77,7 @@ export function ReturnsPanel() {
           big
         />
         <Metric label="Sponsor MOIC" value={fmtMult(outputs.sponsorMOIC)} />
-        <Metric label="Equity at Exit" value={fmtMoney(outputs.exit.equityValue)} />
+        <Metric label="Equity at Exit" value={fmtMoney(Math.max(0, outputs.exit.equityValue))} />
         <Metric label="Enterprise Value" value={fmtMoney(outputs.exit.enterpriseValue)} />
       </div>
 
